@@ -1,0 +1,82 @@
+{
+  "app": {
+    "name": "SlideCast",
+    "tagline": "Campus display management"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "add": "Add",
+    "loading": "Loading…",
+    "actions": "Actions",
+    "saved": "Saved"
+  },
+  "lang": {
+    "label": "Language",
+    "hr": "Hrvatski",
+    "en": "English"
+  },
+  "login": {
+    "title": "Log in",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Log in",
+    "hint": "Log in with the email address IT registered for your faculty.",
+    "passwordHint": "This account requires a password."
+  },
+  "errors": {
+    "bad_request": "Invalid input.",
+    "unauthorized": "Please log in.",
+    "forbidden": "You are not allowed to do this.",
+    "not_found": "Not found.",
+    "not_registered": "Email not registered, contact IT.",
+    "password_required": "Enter your password.",
+    "invalid_credentials": "Wrong email or password.",
+    "email_taken": "This email is already registered.",
+    "faculty_name_taken": "A faculty with this name already exists.",
+    "faculty_has_users": "The faculty has users. Move them to another faculty first.",
+    "faculty_not_found": "Faculty does not exist.",
+    "internal": "Server error. Please try again.",
+    "network": "Server not reachable."
+  },
+  "nav": {
+    "faculties": "Faculties",
+    "users": "Users",
+    "logout": "Log out",
+    "superAdmin": "Super admin"
+  },
+  "faculties": {
+    "title": "Faculties",
+    "name": "Name",
+    "quota": "Quota (MB)",
+    "quotaHint": "Empty = unlimited",
+    "unlimited": "Unlimited",
+    "users": "Active users",
+    "empty": "No faculties yet. Add the first one.",
+    "new": "New faculty",
+    "deleteConfirm": "Delete faculty “{{name}}”?"
+  },
+  "users": {
+    "title": "Faculty users",
+    "email": "Email",
+    "displayName": "Name",
+    "faculty": "Faculty",
+    "locale": "Language",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "empty": "No users yet.",
+    "new": "New user",
+    "allFaculties": "All faculties",
+    "needFaculty": "Add a faculty first."
+  },
+  "dashboard": {
+    "welcome": "Welcome, {{name}}",
+    "faculty": "Faculty: {{name}}",
+    "comingSoon": "Displays, media and playlists are coming soon."
+  }
+}

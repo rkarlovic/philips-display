@@ -1,0 +1,82 @@
+{
+  "app": {
+    "name": "SlideCast",
+    "tagline": "Upravljanje ekranima na kampusu"
+  },
+  "common": {
+    "save": "Spremi",
+    "cancel": "Odustani",
+    "edit": "Uredi",
+    "delete": "Obriši",
+    "add": "Dodaj",
+    "loading": "Učitavanje…",
+    "actions": "Radnje",
+    "saved": "Spremljeno"
+  },
+  "lang": {
+    "label": "Jezik",
+    "hr": "Hrvatski",
+    "en": "English"
+  },
+  "login": {
+    "title": "Prijava",
+    "email": "E-pošta",
+    "password": "Lozinka",
+    "submit": "Prijavi se",
+    "hint": "Prijavite se e-adresom koju je IT registrirao za vaš fakultet.",
+    "passwordHint": "Ovaj račun zahtijeva lozinku."
+  },
+  "errors": {
+    "bad_request": "Neispravan unos.",
+    "unauthorized": "Prijavite se.",
+    "forbidden": "Nemate ovlasti za ovu radnju.",
+    "not_found": "Nije pronađeno.",
+    "not_registered": "E-adresa nije registrirana, obratite se IT službi.",
+    "password_required": "Unesite lozinku.",
+    "invalid_credentials": "Pogrešna e-adresa ili lozinka.",
+    "email_taken": "Ova e-adresa je već registrirana.",
+    "faculty_name_taken": "Fakultet s tim nazivom već postoji.",
+    "faculty_has_users": "Fakultet ima korisnike. Prvo ih premjestite na drugi fakultet.",
+    "faculty_not_found": "Fakultet ne postoji.",
+    "internal": "Greška na poslužitelju. Pokušajte ponovno.",
+    "network": "Poslužitelj nije dostupan."
+  },
+  "nav": {
+    "faculties": "Fakulteti",
+    "users": "Korisnici",
+    "logout": "Odjava",
+    "superAdmin": "Super admin"
+  },
+  "faculties": {
+    "title": "Fakulteti",
+    "name": "Naziv",
+    "quota": "Kvota (MB)",
+    "quotaHint": "Prazno = bez ograničenja",
+    "unlimited": "Bez ograničenja",
+    "users": "Aktivni korisnici",
+    "empty": "Još nema fakulteta. Dodajte prvi.",
+    "new": "Novi fakultet",
+    "deleteConfirm": "Obrisati fakultet „{{name}}”?"
+  },
+  "users": {
+    "title": "Korisnici fakulteta",
+    "email": "E-pošta",
+    "displayName": "Ime",
+    "faculty": "Fakultet",
+    "locale": "Jezik",
+    "status": "Status",
+    "active": "Aktivan",
+    "inactive": "Neaktivan",
+    "activate": "Aktiviraj",
+    "deactivate": "Deaktiviraj",
+    "empty": "Još nema korisnika.",
+    "new": "Novi korisnik",
+    "allFaculties": "Svi fakulteti",
+    "needFaculty": "Prvo dodajte fakultet."
+  },
+  "dashboard": {
+    "welcome": "Dobrodošli, {{name}}",
+    "faculty": "Fakultet: {{name}}",
+    "comingSoon": "Ekrani, mediji i popisi za reprodukciju dolaze uskoro."
+  }
+}
