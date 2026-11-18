@@ -13,5 +13,8 @@ export default defineConfig({
   test: {
     include: ['test/**/*.test.ts'],
     environment: 'node',
+    // Many tests spawn ffmpeg/ffprobe/LibreOffice. On CI runners (macOS especially, where
+    // the first run of a downloaded binary is checked by the OS) that can exceed 5 s.
+    testTimeout: 30_000,
   },
 });
