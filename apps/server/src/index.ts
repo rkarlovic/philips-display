@@ -6,30 +6,39 @@ import { openDb } from './db/index.js';
 import { buildApp } from './app.js';
 import { createEmailAuthProvider, ensureSuperAdmin } from './auth/email-provider.js';
 import { purgeExpiredSessions } from './auth/sessions.js';
+import { MediaStore } from './media/store.js';
+import { MediaPipeline } from './media/pipeline.js';
+import { findSoffice } from './media/pptx.js';
 
 async function main() {
   loadDotEnv();
   const config = loadConfig();
 
   // First run: create data/ (db, media, tmp).
-  for (const dir of [
-    config.dataDir,
-    path.join(config.dataDir, 'media'),
-    path.join(config.dataDir, 'tmp'),
-  ]) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
+  fs.mkdirSync(config.dataDir, { recursive: true });
+  const store = new MediaStore(config.dataDir);
 
   const db = openDb(path.join(config.dataDir, 'db.sqlite'));
   await ensureSuperAdmin(db, config.superAdminEmail, config.superAdminPassword);
   purgeExpiredSessions(db, new Date());
 
+  const soffice = findSoffice(config.sofficePath);
+  const pipeline = new MediaPipeline({ db, store, pdfDpi: config.pdfDpi, soffice });
+
   const app = await buildApp(
-    { config, db, auth: createEmailAuthProvider(db), now: () => new Date() },
+    { config, db, auth: createEmailAuthProvider(db), now: () => new Date(), store, pipeline },
     { logger: { level: 'info' } },
   );
+  pipeline.log = app.log;
+  pipeline.recover();
 
   await app.listen({ port: config.port, host: config.host });
+
+  console.log(
+    soffice
+      ? `\nLibreOffice found: ${soffice} (PowerPoint upload enabled)`
+      : '\nLibreOffice not found: PowerPoint upload is disabled. Install LibreOffice or set SOFFICE_PATH.',
+  );
 
   const urls = ['localhost', ...lanAddresses()].map((h) => `  http://${h}:${config.port}/admin/`);
   console.log(`\nSlideCast is running. Admin UI:\n${urls.join('\n')}\n`);

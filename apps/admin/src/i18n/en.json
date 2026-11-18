@@ -11,7 +11,8 @@
     "add": "Add",
     "loading": "Loading…",
     "actions": "Actions",
-    "saved": "Saved"
+    "saved": "Saved",
+    "close": "Close"
   },
   "lang": {
     "label": "Language",
@@ -37,15 +38,115 @@
     "email_taken": "This email is already registered.",
     "faculty_name_taken": "A faculty with this name already exists.",
     "faculty_has_users": "The faculty has users. Move them to another faculty first.",
+    "faculty_not_empty": "The faculty still has media or playlists. Delete them first.",
     "faculty_not_found": "Faculty does not exist.",
+    "unsupported_file": "File type not supported, or the file is damaged. Supported: PDF, PowerPoint (.pptx), PNG, JPG, WebP, MP4.",
+    "file_too_large": "The file is too large.",
+    "quota_exceeded": "The faculty storage quota is exceeded.",
+    "pptx_unavailable": "PowerPoint is not available: install LibreOffice on the server, or export the presentation to PDF.",
+    "media_in_use": "The media is used in playlists:",
+    "media_not_found": "Media not found, or it can't be used in this playlist.",
+    "read_only": "University content is view-only.",
     "internal": "Server error. Please try again.",
     "network": "Server not reachable."
   },
   "nav": {
+    "media": "Media",
+    "playlists": "Playlists",
     "faculties": "Faculties",
     "users": "Users",
     "logout": "Log out",
     "superAdmin": "Super admin"
+  },
+  "owner": {
+    "university": "University"
+  },
+  "kinds": {
+    "pdf": "PDF",
+    "pptx": "PowerPoint",
+    "image": "Image",
+    "video": "Video"
+  },
+  "media": {
+    "title": "Media",
+    "upload": "Upload",
+    "dropHint": "Drop files here or choose them.",
+    "accepted": "Supported: {{list}} (max {{max}} MB).",
+    "noLibreOffice": "Install LibreOffice to enable PowerPoint, or export to PDF.",
+    "usage": "Used {{used}} of {{quota}}.",
+    "usageUnlimited": "Used {{used}} (unlimited).",
+    "uploadTo": "Upload to",
+    "chooseFiles": "Choose files",
+    "show": "Show",
+    "showAll": "All",
+    "empty": "No media yet. Upload your first file.",
+    "processing": "Processing…",
+    "pages": "{{n}} pages",
+    "deleteConfirm": "Delete “{{name}}”?",
+    "checkPages": "Check the generated pages: PowerPoint animations and transitions are lost.",
+    "page": "Page {{n}}",
+    "usedIn": "Used in:",
+    "notUsed": "Not used in any playlist.",
+    "readOnly": "University content: you can use it in playlists, but not change it.",
+    "name": "Name",
+    "rename": "Rename"
+  },
+  "mediaErrors": {
+    "pptx_unavailable": "LibreOffice is not installed.",
+    "pptx_conversion": "PowerPoint conversion failed.",
+    "video_codec": "Video must be H.264 MP4. Export it again (e.g. with HandBrake).",
+    "no_pages": "The document has no pages.",
+    "corrupt": "The file is damaged or can't be read.",
+    "timeout": "Processing took too long.",
+    "interrupted": "Processing was interrupted. Upload the file again.",
+    "unknown": "Processing failed."
+  },
+  "playlists": {
+    "title": "Playlists",
+    "intro": "A playlist loops: every page or image stays on screen for the set time, and after the last one it starts again.",
+    "new": "New playlist",
+    "name": "Name",
+    "owner": "Owner",
+    "create": "Create",
+    "empty": "No playlists yet.",
+    "items": "Items",
+    "defaultDuration": "Default duration (s)",
+    "seconds": "{{n}} s",
+    "deleteConfirm": "Delete playlist “{{name}}”?",
+    "back": "All playlists",
+    "transition": "Transition",
+    "transitions": {
+      "fade": "Fade",
+      "none": "None"
+    },
+    "loopLength": "Loop length: about {{time}}",
+    "durationHelp": "Empty duration = the playlist default (per page for PDF and PowerPoint). Videos play to their end.",
+    "noItems": "The playlist is empty. Add media.",
+    "notReady": "Still processing or failed; it is skipped.",
+    "secondsPerPage": "Seconds per page",
+    "secondsLabel": "Seconds",
+    "toEnd": "to end",
+    "pageFrom": "From page",
+    "pageTo": "To page",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "remove": "Remove",
+    "addMedia": "+ Add media",
+    "closePicker": "Close picker",
+    "noMedia": "No ready media to add.",
+    "unsaved": "Unsaved changes.",
+    "preview": "Preview"
+  },
+  "preview": {
+    "empty": "Nothing to show.",
+    "step": "Step {{n}} of {{total}} · {{time}}",
+    "toEnd": "until the video ends",
+    "seconds": "{{n}} s",
+    "loops": "loops: {{n}}",
+    "prev": "Previous",
+    "next": "Next",
+    "pause": "Pause",
+    "resume": "Resume"
   },
   "faculties": {
     "title": "Faculties",
@@ -73,10 +174,5 @@
     "new": "New user",
     "allFaculties": "All faculties",
     "needFaculty": "Add a faculty first."
-  },
-  "dashboard": {
-    "welcome": "Welcome, {{name}}",
-    "faculty": "Faculty: {{name}}",
-    "comingSoon": "Displays, media and playlists are coming soon."
   }
 }

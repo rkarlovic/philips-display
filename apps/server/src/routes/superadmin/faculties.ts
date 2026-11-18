@@ -11,6 +11,7 @@ import { writeAudit } from '../../audit/index.js';
 import {
   countFacultyUsers,
   deleteFaculty,
+  facultyHasContent,
   facultyNameExists,
   getFaculty,
   insertFaculty,
@@ -75,6 +76,9 @@ export function registerSuperAdminFacultyRoutes(app: FastifyInstance, ctx: AppCo
     const faculty = found(getFaculty(db, facultyScope(user), id));
     if (countFacultyUsers(db, id) > 0) {
       throw new HttpError(409, 'faculty_has_users', 'Remove or move the faculty users first');
+    }
+    if (facultyHasContent(db, id)) {
+      throw new HttpError(409, 'faculty_not_empty', 'Delete the faculty media and playlists first');
     }
     db.transaction(() => {
       // Audit first, with facultyId null: the faculty row is about to disappear.

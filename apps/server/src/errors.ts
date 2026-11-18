@@ -1,10 +1,12 @@
-import type { ErrorCode } from '@slidecast/shared';
+import type { ApiError, ErrorCode } from '@slidecast/shared';
 
 export class HttpError extends Error {
   constructor(
     readonly statusCode: number,
     readonly code: ErrorCode,
     message?: string,
+    /** Extra fields for the JSON error body (e.g. `usedIn`). */
+    readonly extra: Partial<ApiError> = {},
   ) {
     super(message ?? code);
   }

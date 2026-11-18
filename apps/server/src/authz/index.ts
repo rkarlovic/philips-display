@@ -7,7 +7,7 @@
  */
 import type { FastifyRequest } from 'fastify';
 import type { Me } from '@slidecast/shared';
-import { forbidden, notFound, unauthorized } from '../errors.js';
+import { HttpError, forbidden, notFound, unauthorized } from '../errors.js';
 
 export type SessionUser = Me;
 
@@ -49,6 +49,35 @@ export function scopeWhere(
     return { sql: `(${column} = ? OR ${column} IS NULL)`, params: [scope.facultyId] };
   }
   return { sql: `${column} = ?`, params: [scope.facultyId] };
+}
+
+/**
+ * For rows the caller can already see: university rows (faculty_id NULL) are
+ * read-only for faculty users.
+ */
+export function assertWritable(scope: FacultyScope, ownerFacultyId: number | null): void {
+  if (!scope.all && ownerFacultyId == null) {
+    throw new HttpError(403, 'read_only', 'University content is read-only');
+  }
+}
+
+/**
+ * Owner for a new faculty-owned row. Faculty users always create in their own faculty;
+ * the super admin picks a faculty, or null for university content.
+ */
+export function ownerForCreate(
+  scope: FacultyScope,
+  requested: number | null | undefined,
+): number | null {
+  return scope.all ? (requested ?? null) : scope.facultyId;
+}
+
+/** Can media owned by `mediaOwner` go into a playlist owned by `playlistOwner`? */
+export function mediaFitsPlaylist(
+  mediaOwner: number | null,
+  playlistOwner: number | null,
+): boolean {
+  return mediaOwner == null || mediaOwner === playlistOwner;
 }
 
 export function canAccessFaculty(scope: FacultyScope, facultyId: number | null): boolean {

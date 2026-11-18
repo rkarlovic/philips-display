@@ -10,8 +10,7 @@ beforeEach(async () => {
   s = await seedTwoFaculties(t);
 });
 afterEach(async () => {
-  await t.app.close();
-  t.db.close();
+  await t.close();
 });
 
 type Method = 'GET' | 'POST' | 'PATCH' | 'DELETE';

@@ -29,5 +29,12 @@ pnpm lint && pnpm typecheck
 
 ## Status
 
-Milestone 1 (foundation) is done: monorepo, SQLite + migrations, email login, super admin,
-faculties and users, faculty scoping with cross-faculty tests, audit log, CI on Windows/macOS/Linux.
+- **Milestone 1 (foundation):** monorepo, SQLite + migrations, email login, super admin,
+  faculties and users, faculty scoping with cross-faculty tests, audit log, CI on Windows/macOS/Linux.
+- **Milestone 2 (media + playlists):** uploads (PDF, PPTX, PNG/JPG/WebP, MP4) with per-faculty
+  quotas; background processing to content-addressed WebP pages / H.264 video; university media
+  (read-only for faculties); looping playlists with per-item durations and page ranges; a preview
+  player in the admin UI that plays exactly what a display will play.
+
+PowerPoint needs LibreOffice on the server (found automatically, or set `SOFFICE_PATH`).
+Videos must be H.264 MP4; other codecs are rejected with a hint to re-export.

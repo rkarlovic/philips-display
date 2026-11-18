@@ -11,7 +11,8 @@
     "add": "Dodaj",
     "loading": "Učitavanje…",
     "actions": "Radnje",
-    "saved": "Spremljeno"
+    "saved": "Spremljeno",
+    "close": "Zatvori"
   },
   "lang": {
     "label": "Jezik",
@@ -37,15 +38,115 @@
     "email_taken": "Ova e-adresa je već registrirana.",
     "faculty_name_taken": "Fakultet s tim nazivom već postoji.",
     "faculty_has_users": "Fakultet ima korisnike. Prvo ih premjestite na drugi fakultet.",
+    "faculty_not_empty": "Fakultet još ima medije ili popise za reprodukciju. Prvo ih obrišite.",
     "faculty_not_found": "Fakultet ne postoji.",
+    "unsupported_file": "Vrsta datoteke nije podržana ili je datoteka oštećena. Podržano: PDF, PowerPoint (.pptx), PNG, JPG, WebP, MP4.",
+    "file_too_large": "Datoteka je prevelika.",
+    "quota_exceeded": "Prekoračena je kvota prostora fakulteta.",
+    "pptx_unavailable": "PowerPoint nije dostupan: instalirajte LibreOffice na poslužitelj ili izvezite prezentaciju u PDF.",
+    "media_in_use": "Medij se koristi u popisima za reprodukciju:",
+    "media_not_found": "Medij nije pronađen ili se ne može koristiti u ovom popisu.",
+    "read_only": "Sveučilišni sadržaj možete samo pregledavati.",
     "internal": "Greška na poslužitelju. Pokušajte ponovno.",
     "network": "Poslužitelj nije dostupan."
   },
   "nav": {
+    "media": "Mediji",
+    "playlists": "Popisi za reprodukciju",
     "faculties": "Fakulteti",
     "users": "Korisnici",
     "logout": "Odjava",
     "superAdmin": "Super admin"
+  },
+  "owner": {
+    "university": "Sveučilište"
+  },
+  "kinds": {
+    "pdf": "PDF",
+    "pptx": "PowerPoint",
+    "image": "Slika",
+    "video": "Video"
+  },
+  "media": {
+    "title": "Mediji",
+    "upload": "Prijenos",
+    "dropHint": "Povucite datoteke ovamo ili ih odaberite.",
+    "accepted": "Podržano: {{list}} (najviše {{max}} MB).",
+    "noLibreOffice": "Instalirajte LibreOffice za PowerPoint ili izvezite prezentaciju u PDF.",
+    "usage": "Iskorišteno {{used}} od {{quota}}.",
+    "usageUnlimited": "Iskorišteno {{used}} (bez ograničenja).",
+    "uploadTo": "Prenesi u",
+    "chooseFiles": "Odaberi datoteke",
+    "show": "Prikaži",
+    "showAll": "Sve",
+    "empty": "Još nema medija. Prenesite prvu datoteku.",
+    "processing": "Obrada…",
+    "pages": "stranica: {{n}}",
+    "deleteConfirm": "Obrisati „{{name}}”?",
+    "checkPages": "Provjerite generirane stranice: animacije i prijelazi iz PowerPointa se gube.",
+    "page": "Stranica {{n}}",
+    "usedIn": "Koristi se u:",
+    "notUsed": "Ne koristi se ni u jednom popisu.",
+    "readOnly": "Sveučilišni sadržaj: možete ga koristiti u popisima, ali ne i mijenjati.",
+    "name": "Naziv",
+    "rename": "Preimenuj"
+  },
+  "mediaErrors": {
+    "pptx_unavailable": "LibreOffice nije instaliran.",
+    "pptx_conversion": "Pretvorba PowerPointa nije uspjela.",
+    "video_codec": "Video mora biti H.264 MP4. Izvezite ga ponovno (npr. HandBrake).",
+    "no_pages": "Dokument nema stranica.",
+    "corrupt": "Datoteka je oštećena ili se ne može pročitati.",
+    "timeout": "Obrada je trajala predugo.",
+    "interrupted": "Obrada je prekinuta. Prenesite datoteku ponovno.",
+    "unknown": "Obrada nije uspjela."
+  },
+  "playlists": {
+    "title": "Popisi za reprodukciju",
+    "intro": "Popis se vrti u petlji: svaka stranica ili slika ostaje na ekranu zadano vrijeme, a nakon zadnje kreće ispočetka.",
+    "new": "Novi popis",
+    "name": "Naziv",
+    "owner": "Vlasnik",
+    "create": "Stvori",
+    "empty": "Još nema popisa.",
+    "items": "Stavke",
+    "defaultDuration": "Zadano trajanje (s)",
+    "seconds": "{{n}} s",
+    "deleteConfirm": "Obrisati popis „{{name}}”?",
+    "back": "Svi popisi",
+    "transition": "Prijelaz",
+    "transitions": {
+      "fade": "Pretapanje",
+      "none": "Bez prijelaza"
+    },
+    "loopLength": "Trajanje petlje: oko {{time}}",
+    "durationHelp": "Prazno trajanje = zadano trajanje popisa (za PDF i PowerPoint po stranici). Video se prikazuje do kraja.",
+    "noItems": "Popis je prazan. Dodajte medije.",
+    "notReady": "Još se obrađuje ili nije uspjelo; preskače se.",
+    "secondsPerPage": "Sekundi po stranici",
+    "secondsLabel": "Sekundi",
+    "toEnd": "do kraja",
+    "pageFrom": "Od str.",
+    "pageTo": "Do str.",
+    "moveUp": "Pomakni gore",
+    "moveDown": "Pomakni dolje",
+    "remove": "Ukloni",
+    "addMedia": "+ Dodaj medij",
+    "closePicker": "Zatvori odabir",
+    "noMedia": "Nema gotovih medija za dodavanje.",
+    "unsaved": "Promjene nisu spremljene.",
+    "preview": "Pregled"
+  },
+  "preview": {
+    "empty": "Nema ničega za prikaz.",
+    "step": "Korak {{n}} od {{total}} · {{time}}",
+    "toEnd": "do kraja videa",
+    "seconds": "{{n}} s",
+    "loops": "krugova: {{n}}",
+    "prev": "Prethodno",
+    "next": "Sljedeće",
+    "pause": "Pauza",
+    "resume": "Nastavi"
   },
   "faculties": {
     "title": "Fakulteti",
@@ -73,10 +174,5 @@
     "new": "Novi korisnik",
     "allFaculties": "Svi fakulteti",
     "needFaculty": "Prvo dodajte fakultet."
-  },
-  "dashboard": {
-    "welcome": "Dobrodošli, {{name}}",
-    "faculty": "Fakultet: {{name}}",
-    "comingSoon": "Ekrani, mediji i popisi za reprodukciju dolaze uskoro."
   }
 }

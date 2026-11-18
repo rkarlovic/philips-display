@@ -32,15 +32,30 @@ export const ErrorCode = z.enum([
   'email_taken',
   'faculty_name_taken',
   'faculty_has_users',
+  'faculty_not_empty',
   'faculty_not_found',
+  'unsupported_file',
+  'file_too_large',
+  'quota_exceeded',
+  'pptx_unavailable',
+  'media_in_use',
+  'media_not_found',
+  'read_only',
   'internal',
 ]);
 export type ErrorCode = z.infer<typeof ErrorCode>;
+
+export interface NamedRef {
+  id: number;
+  name: string;
+}
 
 export interface ApiError {
   error: ErrorCode;
   message: string;
   issues?: { path: string; message: string }[];
+  /** For `media_in_use`: the playlists (visible to the caller) that use the media. */
+  usedIn?: NamedRef[];
 }
 
 // ---------- auth ----------
@@ -73,6 +88,8 @@ export interface Faculty {
   id: number;
   name: string;
   storageQuotaMb: number | null;
+  /** Bytes counted against the quota (sum of uploaded file sizes). */
+  usedBytes: number;
   userCount: number;
   createdAt: string;
 }
@@ -125,6 +142,182 @@ export type UpdateUserRequest = z.infer<typeof UpdateUserRequest>;
 export const ListUsersQuery = z.object({
   facultyId: z.coerce.number().int().positive().optional(),
 });
+
+// ---------- server capabilities ----------
+
+export interface Capabilities {
+  /** False when LibreOffice is not installed: PowerPoint upload is disabled. */
+  pptx: boolean;
+  maxUploadMb: number;
+  /** File extensions the upload accepts right now, e.g. ['.pdf', '.png']. */
+  acceptedExtensions: string[];
+}
+
+// ---------- media ----------
+
+export const MediaKind = z.enum(['pdf', 'pptx', 'image', 'video']);
+export type MediaKind = z.infer<typeof MediaKind>;
+
+export const MediaStatus = z.enum(['processing', 'ready', 'failed']);
+export type MediaStatus = z.infer<typeof MediaStatus>;
+
+/** Why processing failed; the admin UI translates these. */
+export const MediaErrorCode = z.enum([
+  'pptx_unavailable',
+  'pptx_conversion',
+  'video_codec',
+  'no_pages',
+  'corrupt',
+  'timeout',
+  'interrupted',
+  'unknown',
+]);
+export type MediaErrorCode = z.infer<typeof MediaErrorCode>;
+
+export interface MediaPage {
+  pageNo: number;
+  url: string;
+  thumbUrl: string;
+  width: number;
+  height: number;
+}
+
+export interface Media {
+  id: number;
+  /** null = university (shared) media. */
+  facultyId: number | null;
+  facultyName: string | null;
+  kind: MediaKind;
+  originalName: string;
+  size: number;
+  status: MediaStatus;
+  error: MediaErrorCode | null;
+  thumbUrl: string | null;
+  videoUrl: string | null;
+  durationSec: number | null;
+  pageCount: number;
+  uploadedBy: string | null;
+  createdAt: string;
+  /** True when the caller can see but not change it (university media for a faculty user). */
+  readOnly: boolean;
+}
+
+export interface MediaDetail extends Media {
+  pages: MediaPage[];
+  usedIn: NamedRef[];
+}
+
+/** `owner`: 'university', a faculty id, or omitted for everything visible. */
+export const ListMediaQuery = z.object({
+  owner: z.union([z.literal('university'), z.coerce.number().int().positive()]).optional(),
+});
+
+/** Super admin only: upload target. Omitted = university media. */
+export const UploadMediaQuery = z.object({
+  facultyId: z.coerce.number().int().positive().optional(),
+});
+
+export const UpdateMediaRequest = z.object({
+  originalName: z.string().trim().min(1).max(255),
+});
+export type UpdateMediaRequest = z.infer<typeof UpdateMediaRequest>;
+
+// ---------- playlists ----------
+
+export const Transition = z.enum(['none', 'fade']);
+export type Transition = z.infer<typeof Transition>;
+
+const PlaylistName = z.string().trim().min(1).max(200);
+const DurationSec = z.number().int().min(1).max(86400);
+
+export interface Playlist {
+  id: number;
+  /** null = university playlist. */
+  facultyId: number | null;
+  facultyName: string | null;
+  name: string;
+  defaultDurationSec: number;
+  transition: Transition;
+  itemCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PlaylistItemMedia {
+  kind: MediaKind;
+  originalName: string;
+  status: MediaStatus;
+  thumbUrl: string | null;
+  pageCount: number;
+  durationSec: number | null;
+}
+
+export interface PlaylistItem {
+  id: number;
+  position: number;
+  mediaId: number;
+  media: PlaylistItemMedia;
+  /** null = playlist default (per page for PDF/PPTX; video plays to its end). */
+  durationSec: number | null;
+  pageFrom: number | null;
+  pageTo: number | null;
+}
+
+export interface PlaylistDetail extends Playlist {
+  items: PlaylistItem[];
+}
+
+export const CreatePlaylistRequest = z.object({
+  name: PlaylistName,
+  defaultDurationSec: DurationSec.default(10),
+  transition: Transition.default('fade'),
+  /** Super admin only: owner faculty; null or omitted = university playlist. */
+  facultyId: z.number().int().positive().nullable().optional(),
+});
+export type CreatePlaylistRequest = z.input<typeof CreatePlaylistRequest>;
+
+export const UpdatePlaylistRequest = z.object({
+  name: PlaylistName.optional(),
+  defaultDurationSec: DurationSec.optional(),
+  transition: Transition.optional(),
+});
+export type UpdatePlaylistRequest = z.infer<typeof UpdatePlaylistRequest>;
+
+export const PlaylistItemInput = z
+  .object({
+    mediaId: Id,
+    durationSec: DurationSec.nullable().optional(),
+    pageFrom: z.number().int().min(1).nullable().optional(),
+    pageTo: z.number().int().min(1).nullable().optional(),
+  })
+  .refine((i) => i.pageFrom == null || i.pageTo == null || i.pageFrom <= i.pageTo, {
+    message: 'pageFrom must be <= pageTo',
+    path: ['pageTo'],
+  });
+export type PlaylistItemInput = z.input<typeof PlaylistItemInput>;
+
+export const PutPlaylistItemsRequest = z.object({
+  items: z.array(PlaylistItemInput).max(500),
+});
+export type PutPlaylistItemsRequest = z.input<typeof PutPlaylistItemsRequest>;
+
+// ---------- playback ----------
+
+/** One step of the flat loop a display plays. PDF/PPTX pages are already expanded. */
+export interface ManifestItem {
+  type: 'image' | 'video';
+  url: string;
+  /** Seconds on screen; null for a video = play to its end. */
+  durationSec: number | null;
+  mediaId: number;
+  pageNo: number | null;
+}
+
+export interface PlaylistPreview {
+  playlistId: number;
+  transition: Transition;
+  items: ManifestItem[];
+}
 
 // ---------- audit ----------
 

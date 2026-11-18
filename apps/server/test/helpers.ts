@@ -1,4 +1,9 @@
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import type { FastifyInstance } from 'fastify';
+import { MediaStore } from '../src/media/store.js';
+import { MediaPipeline } from '../src/media/pipeline.js';
 import type { Config } from '../src/config.js';
 import { openDb, type Db } from '../src/db/index.js';
 import { buildApp } from '../src/app.js';
@@ -29,20 +34,47 @@ export interface TestApp {
   app: FastifyInstance;
   db: Db;
   clock: { now: Date };
+  store: MediaStore;
+  pipeline: MediaPipeline;
+  /** Waits for media jobs, closes everything and removes the temp data dir. */
+  close: () => Promise<void>;
 }
 
-export async function createTestApp(): Promise<TestApp> {
-  const config = testConfig();
+export async function createTestApp(
+  opts: { maxUploadMb?: number; soffice?: string | null; pdfDpi?: number } = {},
+): Promise<TestApp> {
+  const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'slidecast-test-'));
+  const config = {
+    ...testConfig(),
+    dataDir,
+    maxUploadMb: opts.maxUploadMb ?? 500,
+    pdfDpi: opts.pdfDpi ?? 72,
+  };
   const db = openDb(':memory:');
   await ensureSuperAdmin(db, config.superAdminEmail, config.superAdminPassword);
   const clock = { now: new Date('2026-03-01T10:00:00Z') };
+  const store = new MediaStore(dataDir);
+  const pipeline = new MediaPipeline({
+    db,
+    store,
+    pdfDpi: config.pdfDpi,
+    soffice: opts.soffice === undefined ? null : opts.soffice,
+  });
   const app = await buildApp({
     config,
     db,
     auth: createEmailAuthProvider(db),
     now: () => clock.now,
+    store,
+    pipeline,
   });
-  return { app, db, clock };
+  const close = async () => {
+    await pipeline.onIdle();
+    await app.close();
+    db.close();
+    fs.rmSync(dataDir, { recursive: true, force: true });
+  };
+  return { app, db, clock, store, pipeline, close };
 }
 
 /** Logs in and returns the Cookie header value. */

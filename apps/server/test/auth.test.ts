@@ -15,8 +15,7 @@ beforeEach(async () => {
   t = await createTestApp();
 });
 afterEach(async () => {
-  await t.app.close();
-  t.db.close();
+  await t.close();
 });
 
 const loginReq = (payload: object) =>

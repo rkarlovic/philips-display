@@ -8,18 +8,21 @@ interface FacultyRow {
   storage_quota_mb: number | null;
   created_at: string;
   user_count: number;
+  used_bytes: number;
 }
 
 const toFaculty = (r: FacultyRow): Faculty => ({
   id: r.id,
   name: r.name,
   storageQuotaMb: r.storage_quota_mb,
+  usedBytes: r.used_bytes,
   userCount: r.user_count,
   createdAt: r.created_at,
 });
 
 const SELECT = `SELECT f.id, f.name, f.storage_quota_mb, f.created_at,
-  (SELECT COUNT(*) FROM users u WHERE u.faculty_id = f.id AND u.active = 1) AS user_count
+  (SELECT COUNT(*) FROM users u WHERE u.faculty_id = f.id AND u.active = 1) AS user_count,
+  (SELECT COALESCE(SUM(m.size), 0) FROM media m WHERE m.faculty_id = f.id) AS used_bytes
   FROM faculties f`;
 
 export function listFaculties(db: Db, scope: FacultyScope): Faculty[] {
@@ -78,6 +81,17 @@ export function countFacultyUsers(db: Db, id: number): number {
     n: number;
   };
   return row.n;
+}
+
+/** Does the faculty still own media or playlists? */
+export function facultyHasContent(db: Db, id: number): boolean {
+  return (
+    db
+      .prepare(
+        'SELECT 1 FROM media WHERE faculty_id = @id UNION ALL SELECT 1 FROM playlists WHERE faculty_id = @id LIMIT 1',
+      )
+      .get({ id }) !== undefined
+  );
 }
 
 export function deleteFaculty(db: Db, id: number): void {
