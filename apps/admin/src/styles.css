@@ -152,6 +152,7 @@ label.row {
 }
 .tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.25rem;
 }
 .tabs a {
@@ -624,4 +625,37 @@ tr.winning td {
   flex-wrap: wrap;
   gap: 0.25rem 1rem;
   padding-left: 1.5rem;
+}
+
+/* ---------- milestone 6: audit log, quota usage ---------- */
+
+.nowrap {
+  white-space: nowrap;
+}
+table.audit pre {
+  margin: 0.3rem 0 0;
+  max-width: 28rem;
+  max-height: 14rem;
+  overflow: auto;
+  font-size: 0.75rem;
+  background: var(--bg);
+  padding: 0.4rem;
+  border-radius: 4px;
+}
+.usage {
+  min-width: 8rem;
+}
+.usage .bar {
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 0.2rem;
+}
+.usage .bar > div {
+  height: 100%;
+  background: var(--accent);
+}
+.usage .bar.full > div {
+  background: var(--danger);
 }

@@ -62,7 +62,8 @@
     "users": "Korisnici",
     "logout": "Odjava",
     "superAdmin": "Super admin",
-    "announcements": "Obavijesti"
+    "announcements": "Obavijesti",
+    "audit": "Dnevnik"
   },
   "owner": {
     "university": "Sveučilište"
@@ -163,7 +164,9 @@
     "users": "Aktivni korisnici",
     "empty": "Još nema fakulteta. Dodajte prvi.",
     "new": "Novi fakultet",
-    "deleteConfirm": "Obrisati fakultet „{{name}}”?"
+    "deleteConfirm": "Obrisati fakultet „{{name}}”?",
+    "used": "Iskorišteno",
+    "usedOf": "{{used}} ({{pct}} % kvote)"
   },
   "users": {
     "title": "Korisnici fakulteta",
@@ -304,5 +307,42 @@
     "endNow": "Završi sada",
     "endConfirm": "Završiti obavijest „{{name}}” odmah?",
     "deleteConfirm": "Obrisati obavijest „{{name}}”?"
+  },
+  "audit": {
+    "title": "Dnevnik promjena",
+    "intro": "Svaka promjena, prijava i naredba ekranu, od najnovije.",
+    "entity": "Vrsta",
+    "action": "Radnja",
+    "user": "Korisnik",
+    "any": "Sve",
+    "when": "Vrijeme",
+    "what": "Što",
+    "details": "Detalji",
+    "show": "Prikaži",
+    "more": "Učitaj starije",
+    "empty": "Nema zapisa za ovaj filtar.",
+    "entities": {
+      "faculty": "fakultet",
+      "user": "korisnik",
+      "session": "prijava",
+      "media": "medij",
+      "playlist": "popis",
+      "display": "ekran",
+      "schedule": "raspored",
+      "announcement": "obavijest"
+    },
+    "actions": {
+      "create": "Dodano",
+      "update": "Promijenjeno",
+      "update_items": "Promijenjene stavke",
+      "delete": "Obrisano",
+      "login": "Prijava",
+      "logout": "Odjava",
+      "pair": "Upareno",
+      "revoke": "Uklonjeno",
+      "new_token": "Nova adresa",
+      "command": "Naredba",
+      "end": "Završeno"
+    }
   }
 }

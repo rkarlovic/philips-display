@@ -62,7 +62,8 @@
     "users": "Users",
     "logout": "Log out",
     "superAdmin": "Super admin",
-    "announcements": "Announcements"
+    "announcements": "Announcements",
+    "audit": "Audit log"
   },
   "owner": {
     "university": "University"
@@ -163,7 +164,9 @@
     "users": "Active users",
     "empty": "No faculties yet. Add the first one.",
     "new": "New faculty",
-    "deleteConfirm": "Delete faculty “{{name}}”?"
+    "deleteConfirm": "Delete faculty “{{name}}”?",
+    "used": "Used",
+    "usedOf": "{{used}} ({{pct}}% of quota)"
   },
   "users": {
     "title": "Faculty users",
@@ -304,5 +307,42 @@
     "endNow": "End now",
     "endConfirm": "End announcement “{{name}}” now?",
     "deleteConfirm": "Delete announcement “{{name}}”?"
+  },
+  "audit": {
+    "title": "Audit log",
+    "intro": "Every change, login and display command, newest first.",
+    "entity": "Type",
+    "action": "Action",
+    "user": "User",
+    "any": "Any",
+    "when": "Time",
+    "what": "What",
+    "details": "Details",
+    "show": "Show",
+    "more": "Load older",
+    "empty": "No entries for this filter.",
+    "entities": {
+      "faculty": "faculty",
+      "user": "user",
+      "session": "session",
+      "media": "media",
+      "playlist": "playlist",
+      "display": "display",
+      "schedule": "schedule",
+      "announcement": "announcement"
+    },
+    "actions": {
+      "create": "Created",
+      "update": "Changed",
+      "update_items": "Items changed",
+      "delete": "Deleted",
+      "login": "Login",
+      "logout": "Logout",
+      "pair": "Paired",
+      "revoke": "Removed",
+      "new_token": "New setup address",
+      "command": "Command",
+      "end": "Ended"
+    }
   }
 }

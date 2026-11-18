@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { Faculty } from '@slidecast/shared';
 import { api } from '../api.js';
 import { errorText } from '../errors.js';
+import { formatBytes } from '../format.js';
 
 const parseQuota = (s: string): number | null => (s.trim() === '' ? null : Number(s));
 
@@ -101,6 +102,7 @@ export function Faculties() {
                 <th>{t('faculties.name')}</th>
                 <th>{t('faculties.quota')}</th>
                 <th>{t('faculties.users')}</th>
+                <th>{t('faculties.used')}</th>
                 <th>{t('common.actions')}</th>
               </tr>
             </thead>
@@ -121,6 +123,9 @@ export function Faculties() {
                       />
                     </td>
                     <td>{f.userCount}</td>
+                    <td>
+                      <Usage f={f} />
+                    </td>
                     <td className="actions">
                       <button type="button" className="primary" onClick={() => save(f.id)}>
                         {t('common.save')}
@@ -135,6 +140,9 @@ export function Faculties() {
                     <td>{f.name}</td>
                     <td>{f.storageQuotaMb ?? t('faculties.unlimited')}</td>
                     <td>{f.userCount}</td>
+                    <td>
+                      <Usage f={f} />
+                    </td>
                     <td className="actions">
                       <button
                         type="button"
@@ -158,5 +166,23 @@ export function Faculties() {
         </div>
       )}
     </section>
+  );
+}
+
+/** Storage used against the quota, with a small bar when there is a quota. */
+function Usage({ f }: { f: Faculty }) {
+  const { t, i18n } = useTranslation();
+  const used = formatBytes(f.usedBytes, i18n.language);
+  if (f.storageQuotaMb == null) return <span className="small">{used}</span>;
+  const pct = Math.min(100, Math.round((f.usedBytes / (f.storageQuotaMb * 1024 * 1024)) * 100));
+  return (
+    <div className="usage" title={t('faculties.usedOf', { used, pct })}>
+      <span className="small">
+        {used} ({pct}%)
+      </span>
+      <div className={`bar${pct >= 90 ? ' full' : ''}`}>
+        <div style={{ width: `${pct}%` }} />
+      </div>
+    </div>
   );
 }

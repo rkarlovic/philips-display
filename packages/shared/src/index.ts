@@ -670,13 +670,31 @@ export interface AuditEntry {
   userId: number | null;
   userEmail: string | null;
   facultyId: number | null;
+  facultyName: string | null;
   action: string;
   entity: string;
   entityId: string | null;
   details: unknown;
 }
 
+export interface AuditPage {
+  entries: AuditEntry[];
+  /** Pass as `beforeId` to load older entries; null = no more. */
+  nextBeforeId: number | null;
+  /** Distinct values, for the filter dropdowns. */
+  entities: string[];
+  actions: string[];
+}
+
+const AuditWord = z.string().regex(/^[a-z_]{1,40}$/);
+
 export const ListAuditQuery = z.object({
   limit: z.coerce.number().int().min(1).max(500).default(100),
   facultyId: z.coerce.number().int().positive().optional(),
+  userId: z.coerce.number().int().positive().optional(),
+  entity: AuditWord.optional(),
+  action: AuditWord.optional(),
+  /** Only entries older than this id (paging). */
+  beforeId: z.coerce.number().int().positive().optional(),
 });
+export type ListAuditQuery = z.input<typeof ListAuditQuery>;

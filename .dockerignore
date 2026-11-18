@@ -1,0 +1,10 @@
+.git
+**/node_modules
+**/dist
+data
+data-before-restore-*
+backups
+test-results
+playwright-report
+.env
+*.log

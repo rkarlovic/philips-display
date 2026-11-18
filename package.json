@@ -16,7 +16,9 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test:e2e": "pnpm build && playwright test --project=e2e",
-    "test:soak": "pnpm build && playwright test --project=soak"
+    "test:soak": "pnpm build && playwright test --project=soak",
+    "backup": "node apps/server/dist/cli/backup.js",
+    "restore": "node apps/server/dist/cli/restore.js"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.0",

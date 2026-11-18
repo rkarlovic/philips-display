@@ -154,7 +154,7 @@ describe('sessions', () => {
   it('writes login to the audit log', async () => {
     const s = await seedTwoFaculties(t);
     const res = await t.app.inject({ url: '/api/admin/audit', headers: { cookie: s.cookieSuper } });
-    const logins = (res.json() as { action: string; userId: number }[]).filter(
+    const logins = (res.json() as { entries: { action: string; userId: number }[] }).entries.filter(
       (e) => e.action === 'login',
     );
     expect(logins.map((e) => e.userId)).toEqual(expect.arrayContaining([s.userA, s.userB]));

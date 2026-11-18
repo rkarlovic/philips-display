@@ -51,6 +51,10 @@ pnpm lint && pnpm typecheck
   faculties or chosen displays, for a time window. _Takeover_ replaces everything while active
   (latest start wins); _mix_ inserts it into each loop (every N items or once per loop). Faculty
   users see active announcements on their display cards but cannot change them.
+- **Milestone 6 (finishing):** audit log screen (filters, details, paging), storage usage per
+  faculty, `pnpm backup` / `pnpm restore` (safe while running; restore keeps the old data aside),
+  Docker image with LibreOffice and Office-compatible fonts, deployment guide for Windows,
+  Linux, macOS and Docker: [docs/deployment.md](docs/deployment.md).
 
 PowerPoint needs LibreOffice on the server (found automatically, or set `SOFFICE_PATH`).
 Videos must be H.264 MP4; other codecs are rejected with a hint to re-export.

@@ -1,5 +1,6 @@
 import type {
   Announcement,
+  AuditPage,
   CreateAnnouncementRequest,
   UpdateAnnouncementRequest,
   ApiError,
@@ -34,6 +35,14 @@ import type {
   UpdateUserRequest,
   User,
 } from '@slidecast/shared';
+
+/** Audit log filters (all optional). */
+export interface AuditFilter {
+  entity?: string;
+  action?: string;
+  facultyId?: number;
+  userId?: number;
+}
 
 export class ApiRequestError extends Error {
   constructor(
@@ -152,6 +161,12 @@ export const api = {
   updateSchedule: (id: number, body: UpdateScheduleRequest) =>
     request<Schedule>('PATCH', `/api/schedules/${id}`, body),
   deleteSchedule: (id: number) => request<void>('DELETE', `/api/schedules/${id}`),
+
+  audit: (q: AuditFilter & { limit?: number; beforeId?: number }) => {
+    const params = new URLSearchParams();
+    for (const [k, v] of Object.entries(q)) if (v !== undefined) params.set(k, String(v));
+    return request<AuditPage>('GET', `/api/admin/audit?${params}`);
+  },
 
   announcements: () => request<Announcement[]>('GET', '/api/admin/announcements'),
   createAnnouncement: (body: CreateAnnouncementRequest) =>

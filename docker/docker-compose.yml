@@ -1,0 +1,22 @@
+# docker compose -f docker/docker-compose.yml up -d
+# Reads secrets from ../.env (copy .env.example to .env first). Data lives in the
+# "slidecast-data" volume; backups go to ../backups on the host.
+services:
+  slidecast:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: slidecast:latest
+    restart: unless-stopped
+    env_file: ../.env
+    environment:
+      DATA_DIR: /data # overrides DATA_DIR from .env
+      HOST: 0.0.0.0
+    ports:
+      - '${PORT:-8080}:8080'
+    volumes:
+      - slidecast-data:/data
+      - ../backups:/app/backups
+
+volumes:
+  slidecast-data:

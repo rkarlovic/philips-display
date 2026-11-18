@@ -58,4 +58,16 @@ test('pair through the admin UI and see live status', async ({ browser, request 
   // Closing the display's browser shows it as not connected.
   await screen.context().close();
   await expect(card.getByText(/Not connected/)).toBeVisible({ timeout: 15_000 });
+
+  // Everything above is in the audit log, filterable.
+  await admin.getByRole('link', { name: 'Audit log' }).click();
+  await admin.getByLabel('Type').selectOption('display');
+  const rows = admin.locator('table.audit tbody tr');
+  await expect(rows.filter({ hasText: 'Paired · display' })).toHaveCount(1);
+  await expect(rows.filter({ hasText: 'Command · display' })).toHaveCount(2); // pause + resume
+  await expect(rows.filter({ hasText: 'Login' })).toHaveCount(0); // filtered out
+  await rows.filter({ hasText: 'Paired' }).getByText('Show').click();
+  await expect(rows.filter({ hasText: 'Paired' }).locator('pre')).toContainText(
+    '"name": "Entrance"',
+  );
 });

@@ -11,6 +11,7 @@ import { Playlists } from './pages/Playlists.js';
 import { PlaylistEditor } from './pages/PlaylistEditor.js';
 import { Displays } from './pages/Displays.js';
 import { Announcements } from './pages/Announcements.js';
+import { Audit } from './pages/Audit.js';
 import { LanguageSwitch } from './components/LanguageSwitch.js';
 
 type Route =
@@ -19,7 +20,8 @@ type Route =
   | { tab: 'playlists'; id?: number }
   | { tab: 'announcements' }
   | { tab: 'faculties' }
-  | { tab: 'users' };
+  | { tab: 'users' }
+  | { tab: 'audit' };
 
 /** Hash routes: #displays (default), #media, #playlists, #playlists/12, #faculties, #users. */
 function routeFromHash(): Route {
@@ -31,6 +33,7 @@ function routeFromHash(): Route {
     case 'announcements':
     case 'faculties':
     case 'users':
+    case 'audit':
       return { tab };
     default:
       return { tab: 'displays' };
@@ -98,6 +101,7 @@ export function App() {
           { id: 'announcements' as const, label: t('nav.announcements') },
           { id: 'faculties' as const, label: t('nav.faculties') },
           { id: 'users' as const, label: t('nav.users') },
+          { id: 'audit' as const, label: t('nav.audit') },
         ]
       : []),
   ];
@@ -132,6 +136,7 @@ export function App() {
         {isSuper && route.tab === 'announcements' && <Announcements />}
         {isSuper && route.tab === 'faculties' && <Faculties />}
         {isSuper && route.tab === 'users' && <Users />}
+        {isSuper && route.tab === 'audit' && <Audit />}
       </main>
     </div>
   );
