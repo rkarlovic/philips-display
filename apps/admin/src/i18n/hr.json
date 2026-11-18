@@ -225,6 +225,35 @@
     "newToken": "Nova adresa za postavljanje",
     "newTokenConfirm": "Izdati novu adresu za „{{name}}”? Stara prestaje vrijediti i ekran se vraća na uparivanje dok ne upišete novu.",
     "revoke": "Ukloni",
-    "revokeConfirm": "Ukloniti ekran „{{name}}”? Vratit će se na zaslon za uparivanje."
+    "revokeConfirm": "Ukloniti ekran „{{name}}”? Vratit će se na zaslon za uparivanje.",
+    "bySchedule": "Prema rasporedu: {{name}} do {{until}}",
+    "byDefault": "Zadani popis: {{name}}",
+    "byIdle": "Nema popisa: prikazuje sat",
+    "nextChange": "sljedeća promjena {{at}}",
+    "schedule": "Raspored ({{n}})"
+  },
+  "schedules": {
+    "title": "Raspored: {{name}}",
+    "intro": "U zadanim terminima ekran prikazuje odabrani popis umjesto zadanog. Ako se termini preklapaju, vrijedi veći prioritet (pri jednakom: noviji termin). Vremena su po lokalnom vremenu poslužitelja.",
+    "empty": "Nema termina: ekran uvijek prikazuje zadani popis.",
+    "when": "Kada",
+    "playlist": "Popis",
+    "priority": "Prioritet",
+    "dates": "od {{from}} do {{to}}",
+    "activeNow": "aktivno sada",
+    "deleteConfirm": "Obrisati ovaj termin?",
+    "add": "Dodaj termin",
+    "edit": "Uredi termin",
+    "noPlaylists": "Prvo napravite popis za reprodukciju.",
+    "days": "Dani",
+    "workdays": "Pon–Pet",
+    "everyDay": "Svaki dan",
+    "from": "Od",
+    "to": "Do",
+    "dateFrom": "Vrijedi od datuma (neobavezno)",
+    "dateTo": "Vrijedi do datuma (neobavezno)",
+    "allDayHint": "Isto vrijeme početka i kraja = cijeli dan (24 sata).",
+    "overnightHint": "Kraj je prije početka: termin traje preko ponoći i završava sljedeći dan. Dani se odnose na dan početka.",
+    "priorityHint": "Veći prioritet pobjeđuje kad se termini preklapaju."
   }
 }

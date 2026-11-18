@@ -550,3 +550,38 @@ a.button {
   letter-spacing: 0.15em;
   text-transform: uppercase;
 }
+
+/* ---------- milestone 4: schedules ---------- */
+
+.badge.on {
+  border-color: #2e7d32;
+  color: #2e7d32;
+  margin-left: 0.4rem;
+}
+tr.winning td {
+  background: color-mix(in srgb, #2e7d32 10%, transparent);
+}
+.source {
+  color: var(--muted);
+}
+.schedule-btn {
+  align-self: flex-start;
+}
+.schedule-form .days {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.4rem 0.6rem;
+}
+.schedule-form .day {
+  flex: none;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.3rem;
+}
+.schedule-form .day input {
+  min-height: 0;
+}

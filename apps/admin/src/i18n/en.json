@@ -225,6 +225,35 @@
     "newToken": "New setup address",
     "newTokenConfirm": "Issue a new address for “{{name}}”? The old one stops working and the display returns to pairing until you enter the new one.",
     "revoke": "Remove",
-    "revokeConfirm": "Remove display “{{name}}”? It returns to the pairing screen."
+    "revokeConfirm": "Remove display “{{name}}”? It returns to the pairing screen.",
+    "bySchedule": "By schedule: {{name}} until {{until}}",
+    "byDefault": "Default playlist: {{name}}",
+    "byIdle": "No playlist: showing the clock",
+    "nextChange": "next change {{at}}",
+    "schedule": "Schedule ({{n}})"
+  },
+  "schedules": {
+    "title": "Schedule: {{name}}",
+    "intro": "During these times the display plays the chosen playlist instead of its default. If times overlap, the higher priority wins (equal: the newer entry). Times are in the server’s local time.",
+    "empty": "No entries: the display always plays its default playlist.",
+    "when": "When",
+    "playlist": "Playlist",
+    "priority": "Priority",
+    "dates": "from {{from}} to {{to}}",
+    "activeNow": "active now",
+    "deleteConfirm": "Delete this entry?",
+    "add": "Add entry",
+    "edit": "Edit entry",
+    "noPlaylists": "Create a playlist first.",
+    "days": "Days",
+    "workdays": "Mon–Fri",
+    "everyDay": "Every day",
+    "from": "From",
+    "to": "To",
+    "dateFrom": "Valid from date (optional)",
+    "dateTo": "Valid until date (optional)",
+    "allDayHint": "Same start and end time = the whole day (24 hours).",
+    "overnightHint": "The end is before the start: the entry runs past midnight and ends the next day. Days refer to the start day.",
+    "priorityHint": "The higher priority wins when entries overlap."
   }
 }

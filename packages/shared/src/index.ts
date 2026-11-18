@@ -157,6 +157,8 @@ export interface Capabilities {
   maxUploadMb: number;
   /** File extensions the upload accepts right now, e.g. ['.pdf', '.png']. */
   acceptedExtensions: string[];
+  /** IANA zone all schedules use (TZ). */
+  timezone: string;
 }
 
 // ---------- media ----------
@@ -343,12 +345,94 @@ export interface Manifest {
   transition: Transition;
   /** IANA zone for the idle-screen clock. */
   timezone: string;
-  /** 'idle' = nothing to play: show the faculty name and a clock. */
-  source: 'playlist' | 'idle';
+  /** Why this content: an active schedule, the default playlist, or 'idle' (name + clock). */
+  source: PlaybackSource;
+  scheduleId: number | null;
   playlistId: number | null;
   playlistName: string | null;
   items: ManifestItem[];
 }
+
+export type PlaybackSource = 'schedule' | 'default' | 'idle';
+
+/** What a display is set to play right now, and when that changes next. */
+export interface Playing {
+  source: PlaybackSource;
+  scheduleId: number | null;
+  playlistId: number | null;
+  playlistName: string | null;
+  /** When the active schedule ends (null: not from a schedule). */
+  until: string | null;
+  /** Next schedule start/end that may change what plays (null: none within a week). */
+  nextChangeAt: string | null;
+}
+
+// ---------- schedules ----------
+
+/** ISO weekday: 1 = Monday … 7 = Sunday. */
+export const Weekday = z.number().int().min(1).max(7);
+const TimeOfDay = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'HH:MM');
+const LocalDate = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'YYYY-MM-DD')
+  .refine((s) => !Number.isNaN(Date.parse(`${s}T00:00:00Z`)), 'invalid date');
+
+export interface Schedule {
+  id: number;
+  displayId: number;
+  playlistId: number;
+  playlistName: string;
+  weekdays: number[];
+  startTime: string;
+  endTime: string;
+  dateFrom: string | null;
+  dateTo: string | null;
+  priority: number;
+  createdAt: string;
+  /** Active right now (not necessarily the winner if several overlap). */
+  activeNow: boolean;
+}
+
+const scheduleFields = {
+  playlistId: Id,
+  weekdays: z
+    .array(Weekday)
+    .min(1)
+    .max(7)
+    .transform((w) => [...new Set(w)].sort((a, b) => a - b)),
+  /** End ≤ start crosses midnight; start = end is a full 24 h (00:00–00:00 = all day). */
+  startTime: TimeOfDay,
+  endTime: TimeOfDay,
+  dateFrom: LocalDate.nullable(),
+  dateTo: LocalDate.nullable(),
+  priority: z.number().int().min(-100).max(100),
+};
+
+const datesInOrder = (s: { dateFrom?: string | null; dateTo?: string | null }) =>
+  !s.dateFrom || !s.dateTo || s.dateFrom <= s.dateTo;
+
+export const CreateScheduleRequest = z
+  .object({
+    ...scheduleFields,
+    dateFrom: scheduleFields.dateFrom.default(null),
+    dateTo: scheduleFields.dateTo.default(null),
+    priority: scheduleFields.priority.default(0),
+  })
+  .refine(datesInOrder, { message: 'dateFrom must be <= dateTo', path: ['dateTo'] });
+export type CreateScheduleRequest = z.input<typeof CreateScheduleRequest>;
+
+export const UpdateScheduleRequest = z
+  .object({
+    playlistId: scheduleFields.playlistId.optional(),
+    weekdays: scheduleFields.weekdays.optional(),
+    startTime: scheduleFields.startTime.optional(),
+    endTime: scheduleFields.endTime.optional(),
+    dateFrom: scheduleFields.dateFrom.optional(),
+    dateTo: scheduleFields.dateTo.optional(),
+    priority: scheduleFields.priority.optional(),
+  })
+  .refine(datesInOrder, { message: 'dateFrom must be <= dateTo', path: ['dateTo'] });
+export type UpdateScheduleRequest = z.input<typeof UpdateScheduleRequest>;
 
 // ---------- displays ----------
 
@@ -382,6 +466,9 @@ export interface Display {
   state: DisplayState | null;
   /** Derived from `state`: what is on screen right now. */
   nowPlaying: { mediaName: string; pageNo: number | null } | null;
+  /** What the server says it should play now (schedule / default / idle). */
+  playing: Playing;
+  scheduleCount: number;
 }
 
 export interface PendingDisplay {

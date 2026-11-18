@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { z } from 'zod';
 import { Email } from '@slidecast/shared';
+import { assertTimeZone } from './playback/time.js';
 
 /** Repo root: works from both src/ (dev) and dist/ (build), which sit at the same depth. */
 export const repoRoot = path.resolve(
@@ -36,7 +37,17 @@ const EnvSchema = z.object({
   SESSION_SECRET: z.string().min(16, 'must be at least 16 characters'),
   SUPERADMIN_EMAIL: Email,
   SUPERADMIN_PASSWORD: z.string().min(8, 'must be at least 8 characters'),
-  TZ: z.string().default('Europe/Zagreb'),
+  TZ: z
+    .string()
+    .default('Europe/Zagreb')
+    .refine((tz) => {
+      try {
+        assertTimeZone(tz);
+        return true;
+      } catch {
+        return false;
+      }
+    }, 'unknown time zone (use an IANA name like Europe/Zagreb)'),
   MAX_UPLOAD_MB: z.coerce.number().int().positive().default(500),
   PDF_DPI: z.coerce.number().int().positive().default(150),
   SOFFICE_PATH: z.string().optional(),

@@ -26,7 +26,7 @@ interface DisplayRow {
 }
 
 /** A display as stored; `online` comes from the WebSocket hub. */
-export type DisplayRecord = Omit<Display, 'online'>;
+export type DisplayRecord = Omit<Display, 'online' | 'playing' | 'scheduleCount'>;
 
 function parseState(json: string | null): DisplayState | null {
   if (!json) return null;
@@ -282,24 +282,29 @@ export function deleteDisplay(db: Db, id: number): void {
   db.prepare('DELETE FROM displays WHERE id = ?').run(id);
 }
 
-/** Displays (any faculty) whose default playlist is this one. */
+/** Displays (any faculty) that use this playlist as default or in a schedule. */
 export function displaysUsingPlaylist(db: Db, playlistId: number): NamedRef[] {
   return db
     .prepare(
-      "SELECT id, name FROM displays WHERE status = 'active' AND default_playlist_id = ? ORDER BY name",
+      `SELECT id, name FROM displays WHERE status = 'active' AND (
+         default_playlist_id = @p OR id IN (SELECT display_id FROM schedules WHERE playlist_id = @p)
+       ) ORDER BY name`,
     )
-    .all(playlistId) as NamedRef[];
+    .all({ p: playlistId }) as NamedRef[];
 }
 
-/** Display ids whose manifest may contain any of these media. */
+/** Display ids whose manifest may contain this media (via default or scheduled playlists). */
 export function displayIdsUsingMedia(db: Db, mediaId: number): number[] {
   return (
     db
       .prepare(
         `SELECT DISTINCT d.id FROM displays d
-         JOIN playlist_items i ON i.playlist_id = d.default_playlist_id
-         WHERE d.status = 'active' AND i.media_id = ?`,
+         WHERE d.status = 'active' AND (
+           d.default_playlist_id IN (SELECT playlist_id FROM playlist_items WHERE media_id = @m)
+           OR d.id IN (SELECT s.display_id FROM schedules s
+                       JOIN playlist_items i ON i.playlist_id = s.playlist_id WHERE i.media_id = @m)
+         )`,
       )
-      .all(mediaId) as { id: number }[]
+      .all({ m: mediaId }) as { id: number }[]
   ).map((r) => r.id);
 }

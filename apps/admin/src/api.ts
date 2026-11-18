@@ -3,8 +3,11 @@ import type {
   Capabilities,
   CreateFacultyRequest,
   CreatePlaylistRequest,
+  CreateScheduleRequest,
   CreateUserRequest,
   Display,
+  Schedule,
+  UpdateScheduleRequest,
   DisplayCommand,
   DisplayCommandResult,
   DisplaySetup,
@@ -138,4 +141,12 @@ export const api = {
     request<DisplaySetup>('POST', '/api/admin/displays/pair', body),
   newDisplayToken: (id: number) => request<DisplaySetup>('POST', `/api/admin/displays/${id}/token`),
   revokeDisplay: (id: number) => request<void>('DELETE', `/api/admin/displays/${id}`),
+
+  schedules: (displayId: number) =>
+    request<Schedule[]>('GET', `/api/displays/${displayId}/schedules`),
+  createSchedule: (displayId: number, body: CreateScheduleRequest) =>
+    request<Schedule>('POST', `/api/displays/${displayId}/schedules`, body),
+  updateSchedule: (id: number, body: UpdateScheduleRequest) =>
+    request<Schedule>('PATCH', `/api/schedules/${id}`, body),
+  deleteSchedule: (id: number) => request<void>('DELETE', `/api/schedules/${id}`),
 };

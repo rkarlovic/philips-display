@@ -47,7 +47,7 @@ describe('resolveManifest', () => {
 
     const m = await manifestFor(t.app, token);
     expect(m).toMatchObject({
-      source: 'playlist',
+      source: 'default',
       playlistName: 'Hall',
       rotation: 270,
       fit: 'cover',

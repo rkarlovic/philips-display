@@ -77,7 +77,7 @@ export function registerPlayerRoutes(app: FastifyInstance, ctx: AppContext): voi
 
   app.get('/api/player/manifest', async (req): Promise<Manifest> => {
     const id = displayFromBearer(req);
-    const manifest = resolveManifest(db, id, { timezone: ctx.config.timezone });
+    const manifest = resolveManifest(db, id, { timezone: ctx.config.timezone, now: ctx.now() });
     if (!manifest) throw new HttpError(401, 'unauthorized', 'Display not active');
     touchDisplay(db, id, iso());
     return manifest;
@@ -111,7 +111,7 @@ export function registerPlayerRoutes(app: FastifyInstance, ctx: AppContext): voi
         touchDisplay(db, id, iso());
         hub.attachPlayer(id, socket);
         // Bring a reconnecting player up to date right away.
-        const manifest = resolveManifest(db, id, { timezone: ctx.config.timezone });
+        const manifest = resolveManifest(db, id, { timezone: ctx.config.timezone, now: ctx.now() });
         if (manifest && manifest.version !== msg.manifestVersion) {
           hub.sendToDisplay(id, { type: 'manifest_changed', version: manifest.version });
         }

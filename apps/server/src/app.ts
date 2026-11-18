@@ -18,10 +18,12 @@ import { registerSuperAdminFacultyRoutes } from './routes/superadmin/faculties.j
 import { registerSuperAdminUserRoutes } from './routes/superadmin/users.js';
 import { registerSuperAdminAuditRoutes } from './routes/superadmin/audit.js';
 import { registerDisplayRoutes } from './routes/admin/displays.js';
+import { registerScheduleRoutes } from './routes/admin/schedules.js';
 import { registerSuperAdminDisplayRoutes } from './routes/superadmin/displays.js';
 import { registerPlayerRoutes } from './routes/player/player.js';
 import { displayIdsUsingMedia } from './db/repos/displays.js';
 import { Hub } from './ws/hub.js';
+import { Scheduler } from './playback/scheduler.js';
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -30,6 +32,7 @@ declare module 'fastify' {
   }
   interface FastifyInstance {
     hub: Hub;
+    scheduler: Scheduler;
   }
 }
 
@@ -44,16 +47,27 @@ function isClientError(err: unknown): err is { statusCode: number; message: stri
 }
 
 export async function buildApp(
-  base: Omit<AppContext, 'hub'>,
+  base: Omit<AppContext, 'hub' | 'scheduler'>,
   opts: { logger?: FastifyServerOptions['logger'] } = {},
 ): Promise<FastifyInstance> {
   const app = Fastify({ logger: opts.logger ?? false, trustProxy: false });
 
-  const hub = new Hub({ db: base.db, timezone: base.config.timezone });
-  const ctx: AppContext = { ...base, hub };
+  const hub = new Hub({ db: base.db, timezone: base.config.timezone, now: base.now });
+  const scheduler = new Scheduler({
+    db: base.db,
+    hub,
+    timezone: base.config.timezone,
+    now: base.now,
+  });
+  const ctx: AppContext = { ...base, hub, scheduler };
   app.decorate('hub', hub);
+  app.decorate('scheduler', scheduler);
   hub.start();
-  app.addHook('onClose', async () => hub.stop());
+  scheduler.start();
+  app.addHook('onClose', async () => {
+    scheduler.stop();
+    hub.stop();
+  });
   // When a media file finishes processing, displays playing it get the new manifest.
   base.pipeline.onReady = (mediaId) => hub.manifestChanged(displayIdsUsingMedia(base.db, mediaId));
 
@@ -119,6 +133,7 @@ export async function buildApp(
   registerSuperAdminUserRoutes(app, ctx);
   registerSuperAdminAuditRoutes(app, ctx);
   registerDisplayRoutes(app, ctx);
+  registerScheduleRoutes(app, ctx);
   registerSuperAdminDisplayRoutes(app, ctx);
   registerPlayerRoutes(app, ctx);
 

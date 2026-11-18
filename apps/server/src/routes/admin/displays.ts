@@ -20,6 +20,7 @@ import { writeAudit } from '../../audit/index.js';
 import { getDisplay, listDisplays, updateDisplay } from '../../db/repos/displays.js';
 import { getFaculty } from '../../db/repos/faculties.js';
 import { getPlaylist } from '../../db/repos/playlists.js';
+import { deleteSchedulesNotFitting } from '../../db/repos/schedules.js';
 import { HttpError, unauthorized } from '../../errors.js';
 import { parse } from '../../validate.js';
 
@@ -71,6 +72,8 @@ export function registerDisplayRoutes(app: FastifyInstance, ctx: AppContext): vo
 
     db.transaction(() => {
       updateDisplay(db, id, { ...body, defaultPlaylistId });
+      // Moved to another faculty: its schedules with the old faculty's playlists go too.
+      if (facultyId !== display.facultyId) deleteSchedulesNotFitting(db, id, facultyId);
       writeAudit(
         db,
         user,
@@ -81,6 +84,7 @@ export function registerDisplayRoutes(app: FastifyInstance, ctx: AppContext): vo
     if (facultyId !== display.facultyId) hub.displayRemoved(id, display.facultyId);
     hub.broadcastDisplay(id);
     hub.manifestChanged([id]);
+    ctx.scheduler.reschedule();
     return hub.toDisplay(found(getDisplay(db, scope, id)));
   });
 

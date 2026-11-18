@@ -43,6 +43,10 @@ pnpm lint && pnpm typecheck
   next/prev/pause/resume/reload. The player (`/player`) is a tiny ES2019 page for the display's
   old built-in Chromium; it keeps looping when the server is down and reconnects by itself.
   Setting up a display: [docs/display-setup.md](docs/display-setup.md).
+- **Milestone 4 (scheduling):** per-display schedules (weekdays, from–to time incl. overnight,
+  optional date range, priority) that override the default playlist. A server-side scheduler
+  pushes changes to the affected displays at each boundary. All times are in `TZ`
+  (default `Europe/Zagreb`) and DST-safe; the display cards show what plays now and the next change.
 
 PowerPoint needs LibreOffice on the server (found automatically, or set `SOFFICE_PATH`).
 Videos must be H.264 MP4; other codecs are rejected with a hint to re-export.

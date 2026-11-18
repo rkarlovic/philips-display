@@ -7,8 +7,9 @@ import type { WebSocket } from 'ws';
 import type { Display, ServerToAdmin, ServerToPlayer } from '@slidecast/shared';
 import type { Db } from '../db/index.js';
 import { canAccessFaculty, type FacultyScope } from '../authz/index.js';
-import { getActiveDisplay } from '../db/repos/displays.js';
-import { resolveManifest } from '../playback/resolver.js';
+import { getActiveDisplay, type DisplayRecord } from '../db/repos/displays.js';
+import { countSchedules } from '../db/repos/schedules.js';
+import { resolveManifest, resolvePlaying } from '../playback/resolver.js';
 
 const OPEN = 1;
 const PING_MS = 30_000;
@@ -30,7 +31,11 @@ export class Hub {
   private readonly admins = new Set<AdminConn>();
   private timer: NodeJS.Timeout | undefined;
 
-  constructor(private readonly opts: { db: Db; timezone: string }) {}
+  constructor(private readonly opts: { db: Db; timezone: string; now: () => Date }) {}
+
+  private resolveOpts() {
+    return { timezone: this.opts.timezone, now: this.opts.now() };
+  }
 
   // ---------- players ----------
 
@@ -74,7 +79,7 @@ export class Hub {
   manifestChanged(displayIds: Iterable<number>): void {
     for (const id of new Set(displayIds)) {
       if (!this.isOnline(id)) continue;
-      const manifest = resolveManifest(this.opts.db, id, { timezone: this.opts.timezone });
+      const manifest = resolveManifest(this.opts.db, id, this.resolveOpts());
       if (manifest) this.sendToDisplay(id, { type: 'manifest_changed', version: manifest.version });
     }
   }
@@ -87,8 +92,14 @@ export class Hub {
     socket.on('close', () => this.admins.delete(conn));
   }
 
-  toDisplay(record: Omit<Display, 'online'>): Display {
-    return { ...record, online: this.isOnline(record.id) };
+  /** Adds live and time-dependent fields to a stored display. */
+  toDisplay(record: DisplayRecord): Display {
+    return {
+      ...record,
+      online: this.isOnline(record.id),
+      playing: resolvePlaying(this.opts.db, record, this.resolveOpts()),
+      scheduleCount: countSchedules(this.opts.db, record.id),
+    };
   }
 
   /** Push the current state of one display to every admin who may see it. */

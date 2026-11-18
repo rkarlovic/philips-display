@@ -66,6 +66,7 @@ export function registerMediaRoutes(app: FastifyInstance, ctx: AppContext): void
       pptx: pipeline.pptxEnabled,
       maxUploadMb: config.maxUploadMb,
       acceptedExtensions: kinds.flat(),
+      timezone: config.timezone,
     };
   });
 

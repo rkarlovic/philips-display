@@ -15,6 +15,7 @@ import { api } from '../api.js';
 import { errorText } from '../errors.js';
 import { useLive } from '../live.js';
 import { OwnerBadge } from '../components/OwnerSelect.js';
+import { ScheduleDialog } from '../components/ScheduleDialog.js';
 
 const ROTATIONS: Rotation[] = [0, 90, 180, 270];
 
@@ -49,8 +50,34 @@ export function Displays({ me }: { me: Me }) {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [editing, setEditing] = useState<Display | null>(null);
+  const [schedulingId, setSchedulingId] = useState<number | null>(null);
+  const [timezone, setTimezone] = useState<string | undefined>(undefined);
+  const { i18n } = useTranslation();
   const [setupUrl, setSetupUrl] = useState<{ name: string; url: string } | null>(null);
   const ago = useRelativeTime();
+
+  useEffect(() => {
+    api
+      .capabilities()
+      .then((c) => setTimezone(c.timezone))
+      .catch(console.error);
+  }, []);
+
+  /** Times are shown in the server's zone (TZ), where the schedules apply. */
+  const fmtTime = (iso: string | null, withDay = false) => {
+    if (!iso) return '';
+    const opts: Intl.DateTimeFormatOptions = {
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: timezone,
+    };
+    if (withDay) opts.weekday = 'short';
+    try {
+      return new Intl.DateTimeFormat(i18n.language, opts).format(new Date(iso));
+    } catch {
+      return new Date(iso).toLocaleString();
+    }
+  };
 
   const loadPending = useCallback(() => {
     if (isSuper) api.pendingDisplays().then(setPending).catch(console.error);
@@ -191,6 +218,18 @@ export function Displays({ me }: { me: Me }) {
                     ? t('displays.idle')
                     : '—'}
               </p>
+              <p className="small source">
+                {d.playing.source === 'schedule'
+                  ? t('displays.bySchedule', {
+                      name: d.playing.playlistName,
+                      until: fmtTime(d.playing.until),
+                    })
+                  : d.playing.source === 'default'
+                    ? t('displays.byDefault', { name: d.playing.playlistName })
+                    : t('displays.byIdle')}
+                {d.playing.nextChangeAt &&
+                  ` · ${t('displays.nextChange', { at: fmtTime(d.playing.nextChangeAt, true) })}`}
+              </p>
               {d.state && d.state.errors.length > 0 && (
                 <details className="small">
                   <summary className="warn">
@@ -219,6 +258,10 @@ export function Displays({ me }: { me: Me }) {
                   ))}
                 </select>
               </label>
+
+              <button type="button" className="schedule-btn" onClick={() => setSchedulingId(d.id)}>
+                🗓 {t('displays.schedule', { n: d.scheduleCount })}
+              </button>
 
               <div className="row controls">
                 <button
@@ -283,6 +326,18 @@ export function Displays({ me }: { me: Me }) {
           ))}
         </div>
       )}
+
+      {schedulingId != null &&
+        (() => {
+          const d = displays?.find((x) => x.id === schedulingId);
+          return d ? (
+            <ScheduleDialog
+              display={d}
+              playlists={playlistsFor(d).filter((p) => isSuper || p.facultyId != null)}
+              onClose={() => setSchedulingId(null)}
+            />
+          ) : null;
+        })()}
 
       {editing && (
         <EditDisplayDialog
