@@ -3,6 +3,7 @@ import Fastify, { type FastifyInstance, type FastifyServerOptions } from 'fastif
 import cookie from '@fastify/cookie';
 import fastifyStatic from '@fastify/static';
 import multipart from '@fastify/multipart';
+import websocket from '@fastify/websocket';
 import { ZodError } from 'zod';
 import type { ApiError } from '@slidecast/shared';
 import type { AppContext } from './context.js';
@@ -16,11 +17,19 @@ import { registerPlaylistRoutes } from './routes/admin/playlists.js';
 import { registerSuperAdminFacultyRoutes } from './routes/superadmin/faculties.js';
 import { registerSuperAdminUserRoutes } from './routes/superadmin/users.js';
 import { registerSuperAdminAuditRoutes } from './routes/superadmin/audit.js';
+import { registerDisplayRoutes } from './routes/admin/displays.js';
+import { registerSuperAdminDisplayRoutes } from './routes/superadmin/displays.js';
+import { registerPlayerRoutes } from './routes/player/player.js';
+import { displayIdsUsingMedia } from './db/repos/displays.js';
+import { Hub } from './ws/hub.js';
 
 declare module 'fastify' {
   interface FastifyRequest {
     user: SessionUser | null;
     sessionToken: string | null;
+  }
+  interface FastifyInstance {
+    hub: Hub;
   }
 }
 
@@ -35,12 +44,21 @@ function isClientError(err: unknown): err is { statusCode: number; message: stri
 }
 
 export async function buildApp(
-  ctx: AppContext,
+  base: Omit<AppContext, 'hub'>,
   opts: { logger?: FastifyServerOptions['logger'] } = {},
 ): Promise<FastifyInstance> {
   const app = Fastify({ logger: opts.logger ?? false, trustProxy: false });
 
+  const hub = new Hub({ db: base.db, timezone: base.config.timezone });
+  const ctx: AppContext = { ...base, hub };
+  app.decorate('hub', hub);
+  hub.start();
+  app.addHook('onClose', async () => hub.stop());
+  // When a media file finishes processing, displays playing it get the new manifest.
+  base.pipeline.onReady = (mediaId) => hub.manifestChanged(displayIdsUsingMedia(base.db, mediaId));
+
   await app.register(cookie, { secret: ctx.config.sessionSecret });
+  await app.register(websocket, { options: { maxPayload: 64 * 1024 } });
   await app.register(multipart, {
     limits: { fileSize: ctx.config.maxUploadMb * 1024 * 1024, files: 1, fields: 5 },
   });
@@ -100,8 +118,25 @@ export async function buildApp(
   registerSuperAdminFacultyRoutes(app, ctx);
   registerSuperAdminUserRoutes(app, ctx);
   registerSuperAdminAuditRoutes(app, ctx);
+  registerDisplayRoutes(app, ctx);
+  registerSuperAdminDisplayRoutes(app, ctx);
+  registerPlayerRoutes(app, ctx);
 
   app.get('/api/health', async () => ({ ok: true }));
+
+  // Player page for the displays' built-in browser. `/player?token=…` keeps its query.
+  if (fs.existsSync(ctx.config.playerDistDir)) {
+    await app.register(fastifyStatic, {
+      root: ctx.config.playerDistDir,
+      prefix: '/player/',
+      decorateReply: false,
+      list: false,
+    });
+  }
+  app.get('/player', async (req, reply) => {
+    const q = req.url.indexOf('?');
+    return reply.redirect(`/player/${q >= 0 ? req.url.slice(q) : ''}`);
+  });
 
   // Built admin UI at /admin (single-page app; unknown /admin/* paths get index.html).
   const hasAdmin = fs.existsSync(ctx.config.adminDistDir);

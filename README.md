@@ -24,6 +24,8 @@ Open `http://<server-ip>:8080/admin/`.
 ```bash
 pnpm dev        # server on :8080 (watch) + admin UI on http://localhost:5173/admin/
 pnpm test       # vitest + i18n key check
+pnpm test:e2e   # Playwright: player + admin in a real browser (first: pnpm exec playwright install chromium)
+pnpm test:soak  # player memory over time; PW_CHANNEL=msedge|chrome for real H.264, SOAK_MINUTES=240 for release checks
 pnpm lint && pnpm typecheck
 ```
 
@@ -35,6 +37,12 @@ pnpm lint && pnpm typecheck
   quotas; background processing to content-addressed WebP pages / H.264 video; university media
   (read-only for faculties); looping playlists with per-item durations and page ranges; a preview
   player in the admin UI that plays exactly what a display will play.
+
+- **Milestone 3 (displays + player):** pairing by on-screen code, per-display default playlist,
+  live push over WebSocket, rotation/fit, live status (online, now playing, paused) and remote
+  next/prev/pause/resume/reload. The player (`/player`) is a tiny ES2019 page for the display's
+  old built-in Chromium; it keeps looping when the server is down and reconnects by itself.
+  Setting up a display: [docs/display-setup.md](docs/display-setup.md).
 
 PowerPoint needs LibreOffice on the server (found automatically, or set `SOFFICE_PATH`).
 Videos must be H.264 MP4; other codecs are rejected with a hint to re-export.

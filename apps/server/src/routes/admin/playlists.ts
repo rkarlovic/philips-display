@@ -31,6 +31,7 @@ import {
   updatePlaylist,
 } from '../../db/repos/playlists.js';
 import { expandPlaylist } from '../../playback/manifest.js';
+import { displaysUsingPlaylist } from '../../db/repos/displays.js';
 import { HttpError } from '../../errors.js';
 import { parse } from '../../validate.js';
 
@@ -38,6 +39,10 @@ export function registerPlaylistRoutes(app: FastifyInstance, ctx: AppContext): v
   const { db } = ctx;
 
   const detail = (p: Playlist): PlaylistDetail => ({ ...p, items: getPlaylistItems(db, p.id) });
+
+  /** Displays playing this playlist get `manifest_changed` (only if their manifest changed). */
+  const pushToDisplays = (playlistId: number) =>
+    ctx.hub.manifestChanged(displaysUsingPlaylist(db, playlistId).map((d) => d.id));
 
   app.get('/api/playlists', async (req): Promise<Playlist[]> => {
     const scope = facultyScope(requireUser(req));
@@ -98,6 +103,7 @@ export function registerPlaylistRoutes(app: FastifyInstance, ctx: AppContext): v
         ctx.now(),
       );
     })();
+    pushToDisplays(id);
     return detail(found(getPlaylist(db, scope, id)));
   });
 
@@ -139,6 +145,7 @@ export function registerPlaylistRoutes(app: FastifyInstance, ctx: AppContext): v
         ctx.now(),
       );
     })();
+    pushToDisplays(id);
     return detail(found(getPlaylist(db, scope, id)));
   });
 
@@ -147,6 +154,12 @@ export function registerPlaylistRoutes(app: FastifyInstance, ctx: AppContext): v
     const scope = facultyScope(user);
     const { id } = parse(IdParam, req.params);
     const p = found(getPlaylist(db, scope, id));
+    const usedBy = displaysUsingPlaylist(db, id);
+    if (usedBy.length > 0) {
+      throw new HttpError(409, 'playlist_in_use', 'Playlist is the default of displays', {
+        usedIn: usedBy,
+      });
+    }
     db.transaction(() => {
       writeAudit(
         db,

@@ -48,9 +48,13 @@
     "media_not_found": "Medij nije pronađen ili se ne može koristiti u ovom popisu.",
     "read_only": "Sveučilišni sadržaj možete samo pregledavati.",
     "internal": "Greška na poslužitelju. Pokušajte ponovno.",
-    "network": "Poslužitelj nije dostupan."
+    "network": "Poslužitelj nije dostupan.",
+    "pairing_code_invalid": "Nijedan ekran ne prikazuje taj kod. Provjerite kod na ekranu.",
+    "playlist_not_found": "Popis nije pronađen ili se ne može koristiti na ovom ekranu.",
+    "playlist_in_use": "Popis je zadani popis ekrana:"
   },
   "nav": {
+    "displays": "Ekrani",
     "media": "Mediji",
     "playlists": "Popisi za reprodukciju",
     "faculties": "Fakulteti",
@@ -174,5 +178,53 @@
     "new": "Novi korisnik",
     "allFaculties": "Svi fakulteti",
     "needFaculty": "Prvo dodajte fakultet."
+  },
+  "displays": {
+    "title": "Ekrani",
+    "empty": "Vaš fakultet još nema ekrana. Ekrane uparuje IT služba.",
+    "emptySuper": "Još nema uparenih ekrana. Otvorite /player na ekranu i upišite kod gore.",
+    "online": "Povezan",
+    "offline": "Nije povezan · zadnji put {{ago}}",
+    "never": "nikad",
+    "paused": "Pauzirano",
+    "nowPlaying": "Prikazuje: {{name}}{{page}} ({{n}}/{{total}})",
+    "idle": "Nema sadržaja: prikazuje sat",
+    "errors": "Greške pri prikazu: {{n}}",
+    "defaultPlaylist": "Zadani popis",
+    "noPlaylist": "— nijedan (sat) —",
+    "offlineCommand": "Ekran „{{name}}” nije povezan; naredba nije poslana.",
+    "cmd": {
+      "prev": "Prethodno",
+      "next": "Sljedeće",
+      "pause": "Pauza",
+      "resume": "Nastavi",
+      "reload": "Ponovno učitaj"
+    },
+    "pairTitle": "Upari ekran",
+    "pairHint": "Na ekranu otvorite http://<poslužitelj>/player. Ekran prikazuje kod od 6 znakova; upišite ga ovdje.",
+    "code": "Kod s ekrana",
+    "name": "Naziv ekrana",
+    "location": "Lokacija",
+    "rotation": "Orijentacija",
+    "rotations": {
+      "r0": "Vodoravno (0°)",
+      "r90": "Okomito (90°)",
+      "r180": "Vodoravno naopako (180°)",
+      "r270": "Okomito (270°)"
+    },
+    "fit": "Prilagodba",
+    "fits": {
+      "contain": "Cijeli sadržaj (crni rubovi)",
+      "cover": "Ispuni ekran (rezanje)"
+    },
+    "pair": "Upari",
+    "waiting": "Ekrani koji čekaju:",
+    "paired": "Ekran „{{name}}” je uparen i počinje s prikazom.",
+    "setupUrlHint": "Ako ekran zaboravi uparivanje nakon ponovnog pokretanja, upišite ovu adresu u postavke preglednika na ekranu:",
+    "copy": "Kopiraj",
+    "newToken": "Nova adresa za postavljanje",
+    "newTokenConfirm": "Izdati novu adresu za „{{name}}”? Stara prestaje vrijediti i ekran se vraća na uparivanje dok ne upišete novu.",
+    "revoke": "Ukloni",
+    "revokeConfirm": "Ukloniti ekran „{{name}}”? Vratit će se na zaslon za uparivanje."
   }
 }

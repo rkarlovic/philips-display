@@ -476,3 +476,77 @@ a.button {
   color: #eee;
   border-color: #444;
 }
+
+/* ---------- milestone 3: displays ---------- */
+
+.full {
+  width: 100%;
+}
+.display-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 0.75rem;
+}
+.display-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0;
+}
+.display-card h2 {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+.display-card p {
+  margin: 0;
+}
+.display-card.online {
+  border-color: color-mix(in srgb, #2e7d32 50%, var(--border));
+}
+.dot {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 50%;
+  flex: none;
+}
+.dot.on {
+  background: #2e7d32;
+  box-shadow: 0 0 0 3px #2e7d3233;
+}
+.dot.off {
+  background: var(--muted);
+}
+.now-playing {
+  min-height: 1.4em;
+  overflow-wrap: anywhere;
+}
+.controls button {
+  min-width: 2.5rem;
+}
+.notice {
+  border-color: var(--accent);
+}
+.setup-url {
+  display: block;
+  padding: 0.5rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow-wrap: anywhere;
+  font-size: 0.85rem;
+}
+.chip {
+  min-height: 0;
+  padding: 0.15rem 0.5rem;
+  margin: 0.15rem 0.25rem 0 0;
+  border-radius: 999px;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 0.8rem;
+}
+.code-input {
+  font-family: ui-monospace, Consolas, monospace;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}

@@ -9,22 +9,28 @@ import { Users } from './pages/Users.js';
 import { MediaLibrary } from './pages/MediaLibrary.js';
 import { Playlists } from './pages/Playlists.js';
 import { PlaylistEditor } from './pages/PlaylistEditor.js';
+import { Displays } from './pages/Displays.js';
 import { LanguageSwitch } from './components/LanguageSwitch.js';
 
 type Route =
-  { tab: 'media' } | { tab: 'playlists'; id?: number } | { tab: 'faculties' } | { tab: 'users' };
+  | { tab: 'displays' }
+  | { tab: 'media' }
+  | { tab: 'playlists'; id?: number }
+  | { tab: 'faculties' }
+  | { tab: 'users' };
 
-/** Hash routes: #media, #playlists, #playlists/12, #faculties, #users. */
+/** Hash routes: #displays (default), #media, #playlists, #playlists/12, #faculties, #users. */
 function routeFromHash(): Route {
   const [tab, id] = location.hash.replace(/^#/, '').split('/');
   switch (tab) {
     case 'playlists':
       return { tab, id: id ? Number(id) : undefined };
+    case 'media':
     case 'faculties':
     case 'users':
       return { tab };
     default:
-      return { tab: 'media' };
+      return { tab: 'displays' };
   }
 }
 
@@ -81,6 +87,7 @@ export function App() {
 
   const isSuper = me.role === 'super_admin';
   const tabs: { id: Route['tab']; label: string }[] = [
+    { id: 'displays', label: t('nav.displays') },
     { id: 'media', label: t('nav.media') },
     { id: 'playlists', label: t('nav.playlists') },
     ...(isSuper
@@ -112,6 +119,7 @@ export function App() {
         </button>
       </header>
       <main className="content">
+        {route.tab === 'displays' && <Displays me={me} />}
         {route.tab === 'media' && <MediaLibrary me={me} />}
         {route.tab === 'playlists' && route.id === undefined && <Playlists me={me} />}
         {route.tab === 'playlists' && route.id !== undefined && (

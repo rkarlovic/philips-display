@@ -83,12 +83,14 @@ export function countFacultyUsers(db: Db, id: number): number {
   return row.n;
 }
 
-/** Does the faculty still own media or playlists? */
+/** Does the faculty still own media, playlists or displays? */
 export function facultyHasContent(db: Db, id: number): boolean {
   return (
     db
       .prepare(
-        'SELECT 1 FROM media WHERE faculty_id = @id UNION ALL SELECT 1 FROM playlists WHERE faculty_id = @id LIMIT 1',
+        `SELECT 1 FROM media WHERE faculty_id = @id
+         UNION ALL SELECT 1 FROM playlists WHERE faculty_id = @id
+         UNION ALL SELECT 1 FROM displays WHERE faculty_id = @id LIMIT 1`,
       )
       .get({ id }) !== undefined
   );

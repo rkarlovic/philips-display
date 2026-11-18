@@ -48,9 +48,13 @@
     "media_not_found": "Media not found, or it can't be used in this playlist.",
     "read_only": "University content is view-only.",
     "internal": "Server error. Please try again.",
-    "network": "Server not reachable."
+    "network": "Server not reachable.",
+    "pairing_code_invalid": "No display is showing this code. Check the code on the screen.",
+    "playlist_not_found": "Playlist not found, or it can’t be used on this display.",
+    "playlist_in_use": "The playlist is the default of displays:"
   },
   "nav": {
+    "displays": "Displays",
     "media": "Media",
     "playlists": "Playlists",
     "faculties": "Faculties",
@@ -174,5 +178,53 @@
     "new": "New user",
     "allFaculties": "All faculties",
     "needFaculty": "Add a faculty first."
+  },
+  "displays": {
+    "title": "Displays",
+    "empty": "Your faculty has no displays yet. IT pairs the displays.",
+    "emptySuper": "No paired displays yet. Open /player on a display and enter its code above.",
+    "online": "Connected",
+    "offline": "Not connected · last seen {{ago}}",
+    "never": "never",
+    "paused": "Paused",
+    "nowPlaying": "Showing: {{name}}{{page}} ({{n}}/{{total}})",
+    "idle": "No content: showing the clock",
+    "errors": "Playback errors: {{n}}",
+    "defaultPlaylist": "Default playlist",
+    "noPlaylist": "— none (clock) —",
+    "offlineCommand": "Display “{{name}}” is not connected; the command was not sent.",
+    "cmd": {
+      "prev": "Previous",
+      "next": "Next",
+      "pause": "Pause",
+      "resume": "Resume",
+      "reload": "Reload"
+    },
+    "pairTitle": "Pair a display",
+    "pairHint": "On the display, open http://<server>/player. It shows a 6-character code; enter it here.",
+    "code": "Code on screen",
+    "name": "Display name",
+    "location": "Location",
+    "rotation": "Orientation",
+    "rotations": {
+      "r0": "Landscape (0°)",
+      "r90": "Portrait (90°)",
+      "r180": "Landscape, upside down (180°)",
+      "r270": "Portrait (270°)"
+    },
+    "fit": "Fit",
+    "fits": {
+      "contain": "Show everything (black bars)",
+      "cover": "Fill the screen (crop)"
+    },
+    "pair": "Pair",
+    "waiting": "Displays waiting:",
+    "paired": "Display “{{name}}” is paired and starts playing.",
+    "setupUrlHint": "If the display forgets its pairing after a restart, type this address into the display’s browser settings:",
+    "copy": "Copy",
+    "newToken": "New setup address",
+    "newTokenConfirm": "Issue a new address for “{{name}}”? The old one stops working and the display returns to pairing until you enter the new one.",
+    "revoke": "Remove",
+    "revokeConfirm": "Remove display “{{name}}”? It returns to the pairing screen."
   }
 }

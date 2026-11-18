@@ -4,7 +4,14 @@ import type {
   CreateFacultyRequest,
   CreatePlaylistRequest,
   CreateUserRequest,
+  Display,
+  DisplayCommand,
+  DisplayCommandResult,
+  DisplaySetup,
   ErrorCode,
+  PairDisplayRequest,
+  PendingDisplay,
+  UpdateDisplayRequest,
   Faculty,
   LoginRequest,
   Me,
@@ -120,4 +127,15 @@ export const api = {
     request<PlaylistDetail>('PUT', `/api/playlists/${id}/items`, body),
   deletePlaylist: (id: number) => request<void>('DELETE', `/api/playlists/${id}`),
   playlistPreview: (id: number) => request<PlaylistPreview>('GET', `/api/playlists/${id}/preview`),
+
+  displays: () => request<Display[]>('GET', '/api/displays'),
+  updateDisplay: (id: number, body: UpdateDisplayRequest) =>
+    request<Display>('PATCH', `/api/displays/${id}`, body),
+  displayCommand: (id: number, command: DisplayCommand) =>
+    request<DisplayCommandResult>('POST', `/api/displays/${id}/command`, { command }),
+  pendingDisplays: () => request<PendingDisplay[]>('GET', '/api/admin/displays/pending'),
+  pairDisplay: (body: PairDisplayRequest) =>
+    request<DisplaySetup>('POST', '/api/admin/displays/pair', body),
+  newDisplayToken: (id: number) => request<DisplaySetup>('POST', `/api/admin/displays/${id}/token`),
+  revokeDisplay: (id: number) => request<void>('DELETE', `/api/admin/displays/${id}`),
 };

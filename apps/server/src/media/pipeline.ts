@@ -61,6 +61,8 @@ export class MediaPipeline {
   private readonly queue: JobQueue<Lane>;
   /** Settable after construction (the app logger exists only once the app is built). */
   log: PipelineOptions['log'];
+  /** Called when a media item becomes ready (displays playing it need a new manifest). */
+  onReady: ((mediaId: number) => void) | undefined;
 
   constructor(private readonly opts: PipelineOptions) {
     this.log = opts.log;
@@ -193,5 +195,10 @@ export class MediaPipeline {
     signal.throwIfAborted();
     if (getMediaKind(this.opts.db, id) === undefined) return; // deleted meanwhile
     setMediaReady(this.opts.db, id, result);
+    try {
+      this.onReady?.(id);
+    } catch (err) {
+      this.log?.error({ err }, 'onReady hook failed');
+    }
   }
 }

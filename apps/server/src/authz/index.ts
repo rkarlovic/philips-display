@@ -80,6 +80,16 @@ export function mediaFitsPlaylist(
   return mediaOwner == null || mediaOwner === playlistOwner;
 }
 
+/** Throws 403 for anyone but the super admin (for fields only IT may change). */
+export function forbiddenUnlessSuperAdmin(user: SessionUser): void {
+  if (user.role !== 'super_admin') throw forbidden();
+}
+
+/** A display may play its own faculty's playlists, or university playlists. */
+export function playlistFitsDisplay(playlistOwner: number | null, displayFaculty: number): boolean {
+  return playlistOwner == null || playlistOwner === displayFaculty;
+}
+
 export function canAccessFaculty(scope: FacultyScope, facultyId: number | null): boolean {
   return scope.all || facultyId === scope.facultyId;
 }

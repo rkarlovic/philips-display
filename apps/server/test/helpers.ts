@@ -27,6 +27,7 @@ export function testConfig(): Config {
     pdfDpi: 150,
     sofficePath: undefined,
     adminDistDir: '/nonexistent-admin-dist',
+    playerDistDir: '/nonexistent-player-dist',
   };
 }
 

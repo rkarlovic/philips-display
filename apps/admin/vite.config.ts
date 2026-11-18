@@ -16,7 +16,10 @@ export default defineConfig({
   server: {
     port: 5173,
     host: true,
-    proxy: { '/api': 'http://localhost:8080' },
+    proxy: {
+      '/api': { target: 'http://localhost:8080', ws: true },
+      '/media': 'http://localhost:8080',
+    },
   },
   build: { outDir: 'dist', emptyOutDir: true },
 });

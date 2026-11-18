@@ -41,6 +41,9 @@ export const ErrorCode = z.enum([
   'media_in_use',
   'media_not_found',
   'read_only',
+  'pairing_code_invalid',
+  'playlist_not_found',
+  'playlist_in_use',
   'internal',
 ]);
 export type ErrorCode = z.infer<typeof ErrorCode>;
@@ -54,7 +57,10 @@ export interface ApiError {
   error: ErrorCode;
   message: string;
   issues?: { path: string; message: string }[];
-  /** For `media_in_use`: the playlists (visible to the caller) that use the media. */
+  /**
+   * For `media_in_use`: the playlists (visible to the caller) that use the media.
+   * For `playlist_in_use`: the displays that use the playlist.
+   */
   usedIn?: NamedRef[];
 }
 
@@ -318,6 +324,159 @@ export interface PlaylistPreview {
   transition: Transition;
   items: ManifestItem[];
 }
+
+export const Rotation = z.union([z.literal(0), z.literal(90), z.literal(180), z.literal(270)]);
+export type Rotation = z.infer<typeof Rotation>;
+
+export const Fit = z.enum(['contain', 'cover']);
+export type Fit = z.infer<typeof Fit>;
+
+/** Everything a display needs to play. The server decides; the player just plays it. */
+export interface Manifest {
+  /** Changes whenever anything below changes. */
+  version: string;
+  displayId: number;
+  displayName: string;
+  facultyName: string;
+  rotation: Rotation;
+  fit: Fit;
+  transition: Transition;
+  /** IANA zone for the idle-screen clock. */
+  timezone: string;
+  /** 'idle' = nothing to play: show the faculty name and a clock. */
+  source: 'playlist' | 'idle';
+  playlistId: number | null;
+  playlistName: string | null;
+  items: ManifestItem[];
+}
+
+// ---------- displays ----------
+
+/** What the player last reported about itself. */
+export const DisplayState = z.object({
+  manifestVersion: z.string().max(64).nullable(),
+  itemIndex: z.number().int().min(0).nullable(),
+  itemCount: z.number().int().min(0),
+  mediaId: z.number().int().positive().nullable(),
+  pageNo: z.number().int().positive().nullable(),
+  paused: z.boolean(),
+  /** Recent playback errors (short messages), newest last. */
+  errors: z.array(z.string().max(200)).max(5),
+  screen: z.object({ width: z.number().int(), height: z.number().int() }).nullable(),
+});
+export type DisplayState = z.infer<typeof DisplayState>;
+
+export interface Display {
+  id: number;
+  facultyId: number;
+  facultyName: string;
+  name: string;
+  location: string;
+  rotation: Rotation;
+  fit: Fit;
+  defaultPlaylistId: number | null;
+  defaultPlaylistName: string | null;
+  online: boolean;
+  lastSeenAt: string | null;
+  pairedAt: string | null;
+  state: DisplayState | null;
+  /** Derived from `state`: what is on screen right now. */
+  nowPlaying: { mediaName: string; pageNo: number | null } | null;
+}
+
+export interface PendingDisplay {
+  id: number;
+  code: string;
+  createdAt: string;
+  lastSeenAt: string | null;
+  userAgent: string | null;
+}
+
+const DisplayNameField = z.string().trim().min(1).max(100);
+const Location = z.string().trim().max(200);
+
+/** Pairing codes are shown as 6 characters; spaces, dashes and case are ignored. */
+export const PairingCode = z
+  .string()
+  .transform((s) => s.replace(/[\s-]/g, '').toUpperCase())
+  .pipe(z.string().regex(/^[A-Z0-9]{6}$/));
+
+export const PairDisplayRequest = z.object({
+  code: PairingCode,
+  facultyId: Id,
+  name: DisplayNameField,
+  location: Location.default(''),
+  rotation: Rotation.default(0),
+  fit: Fit.default('contain'),
+});
+export type PairDisplayRequest = z.input<typeof PairDisplayRequest>;
+
+export interface DisplaySetup {
+  display: Display;
+  /** Fallback: type this into the display's browser URL setting if localStorage is not kept. */
+  setupPath: string;
+}
+
+/** Faculty users may only change `defaultPlaylistId`; the rest is super admin only. */
+export const UpdateDisplayRequest = z.object({
+  name: DisplayNameField.optional(),
+  location: Location.optional(),
+  rotation: Rotation.optional(),
+  fit: Fit.optional(),
+  facultyId: Id.optional(),
+  defaultPlaylistId: Id.nullable().optional(),
+});
+export type UpdateDisplayRequest = z.infer<typeof UpdateDisplayRequest>;
+
+export const DisplayCommand = z.enum(['next', 'prev', 'pause', 'resume', 'reload']);
+export type DisplayCommand = z.infer<typeof DisplayCommand>;
+
+export const DisplayCommandRequest = z.object({ command: DisplayCommand });
+
+export interface DisplayCommandResult {
+  /** False when the display is offline (the command is not queued). */
+  delivered: boolean;
+}
+
+// ---------- player pairing (no session; the player is not a user) ----------
+
+export interface PairRequestResponse {
+  code: string;
+  /** Secret the player polls with; whoever holds it receives the device token. */
+  claim: string;
+}
+
+export type PairStatusResponse =
+  { status: 'pending'; code: string } | { status: 'paired'; token: string };
+
+// ---------- WebSocket messages ----------
+
+/** Player → server. The first message must be `hello` with the device token. */
+export const PlayerMessage = z.discriminatedUnion('type', [
+  z.object({
+    type: z.literal('hello'),
+    token: z.string().min(10).max(200),
+    manifestVersion: z.string().max(64).nullable(),
+  }),
+  z.object({ type: z.literal('status'), state: DisplayState }),
+  z.object({ type: z.literal('pong') }),
+]);
+export type PlayerMessage = z.infer<typeof PlayerMessage>;
+
+/** Server → player. */
+export type ServerToPlayer =
+  | { type: 'manifest_changed'; version: string }
+  | { type: 'command'; command: DisplayCommand }
+  | { type: 'ping' };
+
+/** WebSocket close code: the device token is invalid or revoked → show pairing again. */
+export const WS_CLOSE_UNAUTHORIZED = 4001;
+
+/** Server → admin UI (live display status). */
+export type ServerToAdmin =
+  | { type: 'display'; display: Display }
+  | { type: 'display_removed'; id: number }
+  | { type: 'pending_changed' };
 
 // ---------- audit ----------
 

@@ -25,6 +25,8 @@ export interface Config {
   sofficePath: string | undefined;
   /** Built admin UI (apps/admin/dist); served at /admin when it exists. */
   adminDistDir: string;
+  /** Built player (apps/player/dist); served at /player when it exists. */
+  playerDistDir: string;
 }
 
 const EnvSchema = z.object({
@@ -67,5 +69,6 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     pdfDpi: e.PDF_DPI,
     sofficePath: e.SOFFICE_PATH || undefined,
     adminDistDir: path.join(repoRoot, 'apps', 'admin', 'dist'),
+    playerDistDir: path.join(repoRoot, 'apps', 'player', 'dist'),
   };
 }
