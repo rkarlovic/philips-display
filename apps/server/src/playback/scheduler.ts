@@ -1,6 +1,6 @@
 /**
- * Wakes up at the next schedule boundary (any display) and pushes `manifest_changed`
- * only to the displays whose schedules crossed a boundary since the last run.
+ * Wakes up at the next schedule or announcement boundary (any display) and pushes
+ * `manifest_changed` only to the displays concerned by a boundary since the last run.
  *
  * - The clock is injected; `runDue()` can be called directly in tests.
  * - Sleeps at most an hour, so clock jumps (sleep, NTP, DST) are caught quickly.
@@ -8,6 +8,7 @@
  */
 import type { Db } from '../db/index.js';
 import { listAllSchedules, type ScheduleRecord } from '../db/repos/schedules.js';
+import { announcementsEndingAfter, targetedDisplayIds } from '../db/repos/announcements.js';
 import type { Hub } from '../ws/hub.js';
 import { nextBoundary } from './schedule.js';
 
@@ -39,7 +40,14 @@ export class Scheduler {
     clearTimeout(this.timer);
     if (this.stopped) return;
     const now = this.opts.now().getTime();
-    const next = nextBoundary(listAllSchedules(this.opts.db), now, this.opts.timezone);
+    const nowIso = new Date(now).toISOString();
+    const candidates = announcementsEndingAfter(this.opts.db, nowIso)
+      .flatMap((a) => [a.startsAt, a.endsAt])
+      .filter((b): b is string => b != null && b > nowIso)
+      .map((b) => Date.parse(b));
+    const sched = nextBoundary(listAllSchedules(this.opts.db), now, this.opts.timezone);
+    if (sched != null) candidates.push(sched);
+    const next = candidates.length ? Math.min(...candidates) : null;
     const delay = next == null ? MAX_SLEEP_MS : Math.min(MAX_SLEEP_MS, Math.max(0, next - now));
     this.timer = setTimeout(() => {
       this.runDue();
@@ -64,11 +72,19 @@ export class Scheduler {
       list.push(s);
       byDisplay.set(s.displayId, list);
     }
-    const affected: number[] = [];
+    const hit = new Set<number>();
     for (const [displayId, rules] of byDisplay) {
       const b = nextBoundary(rules, from, this.opts.timezone);
-      if (b != null && b <= now) affected.push(displayId);
+      if (b != null && b <= now) hit.add(displayId);
     }
+    // Announcements that started or ended in (from, now].
+    const fromIso = new Date(from).toISOString();
+    const nowIso = new Date(now).toISOString();
+    for (const a of announcementsEndingAfter(this.opts.db, fromIso)) {
+      const crossed = [a.startsAt, a.endsAt].some((b) => b != null && b > fromIso && b <= nowIso);
+      if (crossed) for (const id of targetedDisplayIds(this.opts.db, a.target)) hit.add(id);
+    }
+    const affected = [...hit].sort((x, y) => x - y);
     if (affected.length > 0) {
       this.opts.hub.manifestChanged(affected);
       for (const id of affected) this.opts.hub.broadcastDisplay(id);

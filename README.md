@@ -47,6 +47,10 @@ pnpm lint && pnpm typecheck
   optional date range, priority) that override the default playlist. A server-side scheduler
   pushes changes to the affected displays at each boundary. All times are in `TZ`
   (default `Europe/Zagreb`) and DST-safe; the display cards show what plays now and the next change.
+- **Milestone 5 (announcements):** university content from IT, targeted at all displays, chosen
+  faculties or chosen displays, for a time window. _Takeover_ replaces everything while active
+  (latest start wins); _mix_ inserts it into each loop (every N items or once per loop). Faculty
+  users see active announcements on their display cards but cannot change them.
 
 PowerPoint needs LibreOffice on the server (found automatically, or set `SOFFICE_PATH`).
 Videos must be H.264 MP4; other codecs are rejected with a hint to re-export.

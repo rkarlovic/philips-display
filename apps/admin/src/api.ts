@@ -1,4 +1,7 @@
 import type {
+  Announcement,
+  CreateAnnouncementRequest,
+  UpdateAnnouncementRequest,
   ApiError,
   Capabilities,
   CreateFacultyRequest,
@@ -149,4 +152,13 @@ export const api = {
   updateSchedule: (id: number, body: UpdateScheduleRequest) =>
     request<Schedule>('PATCH', `/api/schedules/${id}`, body),
   deleteSchedule: (id: number) => request<void>('DELETE', `/api/schedules/${id}`),
+
+  announcements: () => request<Announcement[]>('GET', '/api/admin/announcements'),
+  createAnnouncement: (body: CreateAnnouncementRequest) =>
+    request<Announcement>('POST', '/api/admin/announcements', body),
+  updateAnnouncement: (id: number, body: UpdateAnnouncementRequest) =>
+    request<Announcement>('PATCH', `/api/admin/announcements/${id}`, body),
+  endAnnouncement: (id: number) =>
+    request<Announcement>('POST', `/api/admin/announcements/${id}/end`),
+  deleteAnnouncement: (id: number) => request<void>('DELETE', `/api/admin/announcements/${id}`),
 };

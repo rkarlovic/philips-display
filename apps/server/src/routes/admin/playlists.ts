@@ -32,6 +32,8 @@ import {
 } from '../../db/repos/playlists.js';
 import { expandPlaylist } from '../../playback/manifest.js';
 import { displaysUsingPlaylist } from '../../db/repos/displays.js';
+import { announcementsUsingPlaylist } from '../../db/repos/announcements.js';
+import { displayIdsForPlaylist } from '../../playback/affected.js';
 import { HttpError } from '../../errors.js';
 import { parse } from '../../validate.js';
 
@@ -42,7 +44,7 @@ export function registerPlaylistRoutes(app: FastifyInstance, ctx: AppContext): v
 
   /** Displays playing this playlist get `manifest_changed` (only if their manifest changed). */
   const pushToDisplays = (playlistId: number) =>
-    ctx.hub.manifestChanged(displaysUsingPlaylist(db, playlistId).map((d) => d.id));
+    ctx.hub.manifestChanged(displayIdsForPlaylist(db, playlistId, ctx.now()));
 
   app.get('/api/playlists', async (req): Promise<Playlist[]> => {
     const scope = facultyScope(requireUser(req));
@@ -154,9 +156,9 @@ export function registerPlaylistRoutes(app: FastifyInstance, ctx: AppContext): v
     const scope = facultyScope(user);
     const { id } = parse(IdParam, req.params);
     const p = found(getPlaylist(db, scope, id));
-    const usedBy = displaysUsingPlaylist(db, id);
+    const usedBy = [...displaysUsingPlaylist(db, id), ...announcementsUsingPlaylist(db, id)];
     if (usedBy.length > 0) {
-      throw new HttpError(409, 'playlist_in_use', 'Playlist is the default of displays', {
+      throw new HttpError(409, 'playlist_in_use', 'Playlist is used by displays or announcements', {
         usedIn: usedBy,
       });
     }

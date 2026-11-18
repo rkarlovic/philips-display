@@ -51,7 +51,8 @@
     "network": "Poslužitelj nije dostupan.",
     "pairing_code_invalid": "Nijedan ekran ne prikazuje taj kod. Provjerite kod na ekranu.",
     "playlist_not_found": "Popis nije pronađen ili se ne može koristiti na ovom ekranu.",
-    "playlist_in_use": "Popis je zadani popis ekrana:"
+    "playlist_in_use": "Popis je zadani popis ekrana:",
+    "university_playlist_required": "Za obavijest odaberite sveučilišni popis za reprodukciju."
   },
   "nav": {
     "displays": "Ekrani",
@@ -60,7 +61,8 @@
     "faculties": "Fakulteti",
     "users": "Korisnici",
     "logout": "Odjava",
-    "superAdmin": "Super admin"
+    "superAdmin": "Super admin",
+    "announcements": "Obavijesti"
   },
   "owner": {
     "university": "Sveučilište"
@@ -230,7 +232,11 @@
     "byDefault": "Zadani popis: {{name}}",
     "byIdle": "Nema popisa: prikazuje sat",
     "nextChange": "sljedeća promjena {{at}}",
-    "schedule": "Raspored ({{n}})"
+    "schedule": "Raspored ({{n}})",
+    "byTakeover": "Sveučilišna obavijest: {{name}} (do {{until}})",
+    "untilEnded": "opoziva",
+    "byMixOnly": "Samo sveučilišne obavijesti",
+    "mixIns": "Umetnute sveučilišne obavijesti: {{names}}"
   },
   "schedules": {
     "title": "Raspored: {{name}}",
@@ -255,5 +261,48 @@
     "allDayHint": "Isto vrijeme početka i kraja = cijeli dan (24 sata).",
     "overnightHint": "Kraj je prije početka: termin traje preko ponoći i završava sljedeći dan. Dani se odnose na dan početka.",
     "priorityHint": "Veći prioritet pobjeđuje kad se termini preklapaju."
+  },
+  "announcements": {
+    "title": "Sveučilišne obavijesti",
+    "intro": "Sveučilišni sadržaj za sve ili odabrane fakultete i ekrane. Umetanje ga dodaje u petlju ekrana; preuzimanje privremeno zamjenjuje sve ostalo. Fakulteti to vide na svojim ekranima, ali ne mogu mijenjati.",
+    "new": "Nova obavijest",
+    "edit": "Uredi obavijest",
+    "needPlaylist": "Prvo napravite sveučilišni popis za reprodukciju (Popisi → Vlasnik: Sveučilište).",
+    "empty": "Još nema obavijesti.",
+    "name": "Naziv",
+    "playlist": "Sveučilišni popis",
+    "mode": "Način",
+    "modes": {
+      "mix": "Umetanje",
+      "takeover": "Preuzimanje"
+    },
+    "modeHelp": {
+      "mix": "dodaje se u petlju fakulteta",
+      "takeover": "zamjenjuje sav sadržaj na ekranu dok traje"
+    },
+    "mixEvery": "Nakon svakih N stavki",
+    "oncePerLoop": "jednom po krugu",
+    "everyN": "nakon svakih {{n}} stavki",
+    "target": "Ciljni ekrani",
+    "targets": {
+      "all": "Svi ekrani",
+      "faculties": "Odabrani fakulteti",
+      "displays": "Odabrani ekrani"
+    },
+    "targetAll": "Svi ekrani",
+    "displayCount": "ekrana: {{n}}",
+    "startsAt": "Početak",
+    "endsAt": "Kraj (neobavezno)",
+    "timeHint": "Vremena su po lokalnom vremenu poslužitelja. Bez kraja traje dok je ne završite.",
+    "when": "Kada",
+    "untilEnded": "do opoziva",
+    "status": {
+      "scheduled": "Zakazano",
+      "active": "Aktivno",
+      "ended": "Završeno"
+    },
+    "endNow": "Završi sada",
+    "endConfirm": "Završiti obavijest „{{name}}” odmah?",
+    "deleteConfirm": "Obrisati obavijest „{{name}}”?"
   }
 }

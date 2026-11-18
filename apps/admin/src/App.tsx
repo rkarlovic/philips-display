@@ -10,12 +10,14 @@ import { MediaLibrary } from './pages/MediaLibrary.js';
 import { Playlists } from './pages/Playlists.js';
 import { PlaylistEditor } from './pages/PlaylistEditor.js';
 import { Displays } from './pages/Displays.js';
+import { Announcements } from './pages/Announcements.js';
 import { LanguageSwitch } from './components/LanguageSwitch.js';
 
 type Route =
   | { tab: 'displays' }
   | { tab: 'media' }
   | { tab: 'playlists'; id?: number }
+  | { tab: 'announcements' }
   | { tab: 'faculties' }
   | { tab: 'users' };
 
@@ -26,6 +28,7 @@ function routeFromHash(): Route {
     case 'playlists':
       return { tab, id: id ? Number(id) : undefined };
     case 'media':
+    case 'announcements':
     case 'faculties':
     case 'users':
       return { tab };
@@ -92,6 +95,7 @@ export function App() {
     { id: 'playlists', label: t('nav.playlists') },
     ...(isSuper
       ? [
+          { id: 'announcements' as const, label: t('nav.announcements') },
           { id: 'faculties' as const, label: t('nav.faculties') },
           { id: 'users' as const, label: t('nav.users') },
         ]
@@ -125,6 +129,7 @@ export function App() {
         {route.tab === 'playlists' && route.id !== undefined && (
           <PlaylistEditor key={route.id} id={route.id} me={me} />
         )}
+        {isSuper && route.tab === 'announcements' && <Announcements />}
         {isSuper && route.tab === 'faculties' && <Faculties />}
         {isSuper && route.tab === 'users' && <Users />}
       </main>

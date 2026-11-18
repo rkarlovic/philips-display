@@ -219,17 +219,32 @@ export function Displays({ me }: { me: Me }) {
                     : '—'}
               </p>
               <p className="small source">
-                {d.playing.source === 'schedule'
-                  ? t('displays.bySchedule', {
-                      name: d.playing.playlistName,
-                      until: fmtTime(d.playing.until),
-                    })
-                  : d.playing.source === 'default'
-                    ? t('displays.byDefault', { name: d.playing.playlistName })
-                    : t('displays.byIdle')}
+                {d.playing.source === 'takeover' && d.playing.takeover
+                  ? `📢 ${t('displays.byTakeover', {
+                      name: d.playing.takeover.title,
+                      until: d.playing.until
+                        ? fmtTime(d.playing.until, true)
+                        : t('displays.untilEnded'),
+                    })}`
+                  : d.playing.source === 'schedule'
+                    ? t('displays.bySchedule', {
+                        name: d.playing.playlistName,
+                        until: fmtTime(d.playing.until),
+                      })
+                    : d.playing.source === 'default'
+                      ? t('displays.byDefault', { name: d.playing.playlistName })
+                      : d.playing.source === 'mix'
+                        ? t('displays.byMixOnly')
+                        : t('displays.byIdle')}
                 {d.playing.nextChangeAt &&
                   ` · ${t('displays.nextChange', { at: fmtTime(d.playing.nextChangeAt, true) })}`}
               </p>
+              {d.playing.mixIns.length > 0 && (
+                <p className="small mixins">
+                  📢{' '}
+                  {t('displays.mixIns', { names: d.playing.mixIns.map((m) => m.title).join(', ') })}
+                </p>
+              )}
               {d.state && d.state.errors.length > 0 && (
                 <details className="small">
                   <summary className="warn">

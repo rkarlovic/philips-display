@@ -51,7 +51,8 @@
     "network": "Server not reachable.",
     "pairing_code_invalid": "No display is showing this code. Check the code on the screen.",
     "playlist_not_found": "Playlist not found, or it can’t be used on this display.",
-    "playlist_in_use": "The playlist is the default of displays:"
+    "playlist_in_use": "The playlist is the default of displays:",
+    "university_playlist_required": "Choose a university playlist for the announcement."
   },
   "nav": {
     "displays": "Displays",
@@ -60,7 +61,8 @@
     "faculties": "Faculties",
     "users": "Users",
     "logout": "Log out",
-    "superAdmin": "Super admin"
+    "superAdmin": "Super admin",
+    "announcements": "Announcements"
   },
   "owner": {
     "university": "University"
@@ -230,7 +232,11 @@
     "byDefault": "Default playlist: {{name}}",
     "byIdle": "No playlist: showing the clock",
     "nextChange": "next change {{at}}",
-    "schedule": "Schedule ({{n}})"
+    "schedule": "Schedule ({{n}})",
+    "byTakeover": "University announcement: {{name}} (until {{until}})",
+    "untilEnded": "ended",
+    "byMixOnly": "University announcements only",
+    "mixIns": "Mixed-in university announcements: {{names}}"
   },
   "schedules": {
     "title": "Schedule: {{name}}",
@@ -255,5 +261,48 @@
     "allDayHint": "Same start and end time = the whole day (24 hours).",
     "overnightHint": "The end is before the start: the entry runs past midnight and ends the next day. Days refer to the start day.",
     "priorityHint": "The higher priority wins when entries overlap."
+  },
+  "announcements": {
+    "title": "University announcements",
+    "intro": "University content for all or selected faculties and displays. Mix adds it to the display’s loop; takeover temporarily replaces everything else. Faculties see this on their displays but cannot change it.",
+    "new": "New announcement",
+    "edit": "Edit announcement",
+    "needPlaylist": "First create a university playlist (Playlists → Owner: University).",
+    "empty": "No announcements yet.",
+    "name": "Name",
+    "playlist": "University playlist",
+    "mode": "Mode",
+    "modes": {
+      "mix": "Mix",
+      "takeover": "Takeover"
+    },
+    "modeHelp": {
+      "mix": "added into the faculty’s loop",
+      "takeover": "replaces all content on the display while active"
+    },
+    "mixEvery": "After every N items",
+    "oncePerLoop": "once per loop",
+    "everyN": "after every {{n}} items",
+    "target": "Target displays",
+    "targets": {
+      "all": "All displays",
+      "faculties": "Selected faculties",
+      "displays": "Selected displays"
+    },
+    "targetAll": "All displays",
+    "displayCount": "{{n}} displays",
+    "startsAt": "Starts",
+    "endsAt": "Ends (optional)",
+    "timeHint": "Times are in the server’s local time. Without an end it runs until you end it.",
+    "when": "When",
+    "untilEnded": "until ended",
+    "status": {
+      "scheduled": "Scheduled",
+      "active": "Active",
+      "ended": "Ended"
+    },
+    "endNow": "End now",
+    "endConfirm": "End announcement “{{name}}” now?",
+    "deleteConfirm": "Delete announcement “{{name}}”?"
   }
 }

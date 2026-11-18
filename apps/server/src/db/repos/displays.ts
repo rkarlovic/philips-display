@@ -292,19 +292,3 @@ export function displaysUsingPlaylist(db: Db, playlistId: number): NamedRef[] {
     )
     .all({ p: playlistId }) as NamedRef[];
 }
-
-/** Display ids whose manifest may contain this media (via default or scheduled playlists). */
-export function displayIdsUsingMedia(db: Db, mediaId: number): number[] {
-  return (
-    db
-      .prepare(
-        `SELECT DISTINCT d.id FROM displays d
-         WHERE d.status = 'active' AND (
-           d.default_playlist_id IN (SELECT playlist_id FROM playlist_items WHERE media_id = @m)
-           OR d.id IN (SELECT s.display_id FROM schedules s
-                       JOIN playlist_items i ON i.playlist_id = s.playlist_id WHERE i.media_id = @m)
-         )`,
-      )
-      .all({ m: mediaId }) as { id: number }[]
-  ).map((r) => r.id);
-}

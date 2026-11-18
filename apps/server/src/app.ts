@@ -20,8 +20,9 @@ import { registerSuperAdminAuditRoutes } from './routes/superadmin/audit.js';
 import { registerDisplayRoutes } from './routes/admin/displays.js';
 import { registerScheduleRoutes } from './routes/admin/schedules.js';
 import { registerSuperAdminDisplayRoutes } from './routes/superadmin/displays.js';
+import { registerSuperAdminAnnouncementRoutes } from './routes/superadmin/announcements.js';
 import { registerPlayerRoutes } from './routes/player/player.js';
-import { displayIdsUsingMedia } from './db/repos/displays.js';
+import { displayIdsForMedia } from './playback/affected.js';
 import { Hub } from './ws/hub.js';
 import { Scheduler } from './playback/scheduler.js';
 
@@ -69,7 +70,8 @@ export async function buildApp(
     hub.stop();
   });
   // When a media file finishes processing, displays playing it get the new manifest.
-  base.pipeline.onReady = (mediaId) => hub.manifestChanged(displayIdsUsingMedia(base.db, mediaId));
+  base.pipeline.onReady = (mediaId) =>
+    hub.manifestChanged(displayIdsForMedia(base.db, mediaId, base.now()));
 
   await app.register(cookie, { secret: ctx.config.sessionSecret });
   await app.register(websocket, { options: { maxPayload: 64 * 1024 } });
@@ -135,6 +137,7 @@ export async function buildApp(
   registerDisplayRoutes(app, ctx);
   registerScheduleRoutes(app, ctx);
   registerSuperAdminDisplayRoutes(app, ctx);
+  registerSuperAdminAnnouncementRoutes(app, ctx);
   registerPlayerRoutes(app, ctx);
 
   app.get('/api/health', async () => ({ ok: true }));

@@ -165,3 +165,12 @@ export function mediaOwners(db: Db, ids: number[]): Map<number, number | null> {
   for (const r of rows) map.set(r.id, r.faculty_id);
   return map;
 }
+
+/** Playlists that contain a media item. */
+export function playlistIdsWithMedia(db: Db, mediaId: number): number[] {
+  return (
+    db
+      .prepare('SELECT DISTINCT playlist_id FROM playlist_items WHERE media_id = ?')
+      .all(mediaId) as { playlist_id: number }[]
+  ).map((r) => r.playlist_id);
+}

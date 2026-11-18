@@ -585,3 +585,43 @@ tr.winning td {
 .schedule-form .day input {
   min-height: 0;
 }
+
+/* ---------- milestone 5: announcements ---------- */
+
+.badge.takeover {
+  border-color: #c62828;
+  color: #c62828;
+}
+.mixins {
+  color: var(--accent);
+  margin: 0;
+}
+.announcement-form .choice {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+}
+.announcement-form .radio,
+.announcement-form .check,
+.announcement-form .inline {
+  flex: none;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.4rem;
+}
+.announcement-form input[type='radio'],
+.announcement-form input[type='checkbox'] {
+  min-height: 0;
+}
+.announcement-form .inline input {
+  width: 9rem;
+}
+.announcement-form .checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  padding-left: 1.5rem;
+}

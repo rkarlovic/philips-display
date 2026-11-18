@@ -44,6 +44,7 @@ export const ErrorCode = z.enum([
   'pairing_code_invalid',
   'playlist_not_found',
   'playlist_in_use',
+  'university_playlist_required',
   'internal',
 ]);
 export type ErrorCode = z.infer<typeof ErrorCode>;
@@ -345,15 +346,31 @@ export interface Manifest {
   transition: Transition;
   /** IANA zone for the idle-screen clock. */
   timezone: string;
-  /** Why this content: an active schedule, the default playlist, or 'idle' (name + clock). */
+  /** Why this content (see PlaybackSource). */
   source: PlaybackSource;
   scheduleId: number | null;
+  /** Takeover announcement being shown, if any. */
+  announcementId: number | null;
   playlistId: number | null;
   playlistName: string | null;
+  /** Includes mixed-in announcement items. */
   items: ManifestItem[];
 }
 
-export type PlaybackSource = 'schedule' | 'default' | 'idle';
+/**
+ * - takeover: a university announcement replaces everything
+ * - schedule / default: the faculty's own content (possibly with mix-ins)
+ * - mix: no own content, only mixed-in university announcements
+ * - idle: nothing to show (faculty name + clock)
+ */
+export type PlaybackSource = 'takeover' | 'schedule' | 'default' | 'mix' | 'idle';
+
+export interface AnnouncementRef {
+  id: number;
+  title: string;
+  mode: AnnouncementMode;
+  endsAt: string | null;
+}
 
 /** What a display is set to play right now, and when that changes next. */
 export interface Playing {
@@ -361,11 +378,91 @@ export interface Playing {
   scheduleId: number | null;
   playlistId: number | null;
   playlistName: string | null;
-  /** When the active schedule ends (null: not from a schedule). */
+  /** When the active schedule or takeover ends (null: open-ended / not timed). */
   until: string | null;
-  /** Next schedule start/end that may change what plays (null: none within a week). */
+  /** Next schedule/announcement start or end for this display (null: none within a week). */
   nextChangeAt: string | null;
+  /** Active takeover (faculty users can see it but not change it). */
+  takeover: AnnouncementRef | null;
+  /** Active mix-in announcements. */
+  mixIns: AnnouncementRef[];
 }
+
+// ---------- announcements (super admin) ----------
+
+export const AnnouncementMode = z.enum(['mix', 'takeover']);
+export type AnnouncementMode = z.infer<typeof AnnouncementMode>;
+
+export const AnnouncementTarget = z.discriminatedUnion('kind', [
+  z.object({ kind: z.literal('all') }),
+  z.object({
+    kind: z.literal('faculties'),
+    facultyIds: z.array(Id).min(1).max(500),
+  }),
+  z.object({
+    kind: z.literal('displays'),
+    displayIds: z.array(Id).min(1).max(500),
+  }),
+]);
+export type AnnouncementTarget = z.infer<typeof AnnouncementTarget>;
+
+/** Local date-time in the server's zone (TZ), e.g. '2026-03-02T08:00'. */
+export const LocalDateTime = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}T([01]\d|2[0-3]):[0-5]\d$/, 'YYYY-MM-DDTHH:MM')
+  .refine((s) => !Number.isNaN(Date.parse(`${s}:00Z`)), 'invalid date');
+
+export type AnnouncementStatus = 'scheduled' | 'active' | 'ended';
+
+export interface Announcement {
+  id: number;
+  title: string;
+  playlistId: number;
+  playlistName: string;
+  mode: AnnouncementMode;
+  target: AnnouncementTarget;
+  /** UTC instants. */
+  startsAt: string;
+  endsAt: string | null;
+  /** The same, as local date-time in TZ (for editing). */
+  startsAtLocal: string;
+  endsAtLocal: string | null;
+  mixEveryNItems: number | null;
+  status: AnnouncementStatus;
+  /** Paired displays it currently targets. */
+  displayCount: number;
+  createdAt: string;
+}
+
+const AnnouncementTitle = z.string().trim().min(1).max(200);
+const MixEvery = z.number().int().min(1).max(1000).nullable();
+
+export const CreateAnnouncementRequest = z
+  .object({
+    title: AnnouncementTitle,
+    playlistId: Id,
+    mode: AnnouncementMode,
+    target: AnnouncementTarget,
+    startsAt: LocalDateTime,
+    endsAt: LocalDateTime.nullable().default(null),
+    mixEveryNItems: MixEvery.default(null),
+  })
+  .refine((a) => a.endsAt == null || a.endsAt > a.startsAt, {
+    message: 'endsAt must be after startsAt',
+    path: ['endsAt'],
+  });
+export type CreateAnnouncementRequest = z.input<typeof CreateAnnouncementRequest>;
+
+export const UpdateAnnouncementRequest = z.object({
+  title: AnnouncementTitle.optional(),
+  playlistId: Id.optional(),
+  mode: AnnouncementMode.optional(),
+  target: AnnouncementTarget.optional(),
+  startsAt: LocalDateTime.optional(),
+  endsAt: LocalDateTime.nullable().optional(),
+  mixEveryNItems: MixEvery.optional(),
+});
+export type UpdateAnnouncementRequest = z.input<typeof UpdateAnnouncementRequest>;
 
 // ---------- schedules ----------
 

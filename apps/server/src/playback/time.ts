@@ -108,3 +108,16 @@ export function parseTime(hhmm: string): number {
 export function assertTimeZone(tz: string): void {
   formatter(tz);
 }
+
+/** '2026-03-02T08:00' (local wall time in tz) → UTC ISO instant. */
+export function localDateTimeToIso(local: string, tz: string): string {
+  const [date, time] = local.split('T') as [string, string];
+  return new Date(zonedInstant(date, parseTime(time), tz)).toISOString();
+}
+
+/** UTC ISO instant → '2026-03-02T08:00' local wall time in tz. */
+export function isoToLocalDateTime(iso: string, tz: string): string {
+  const t = Date.parse(iso);
+  const m = localMinutes(t, tz);
+  return `${localDate(t, tz)}T${pad(Math.floor(m / 60))}:${pad(m % 60)}`;
+}
